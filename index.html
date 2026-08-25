@@ -862,7 +862,7 @@
             const start = new Date(startDate);
             const now = new Date();
             const days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-            document.getElementById('workDaysDisplay').textContent = days >= 0 ? days : 0;
+            document.getElementById('workDaysDisplay').textContent = days >= 0 ? days+1 : 0;
         } else {
             document.getElementById('workDaysDisplay').textContent = '?';
         }
