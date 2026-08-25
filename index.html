@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>🌸 HR实习生小助手 · 流程增强版</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -96,7 +97,7 @@
         .ledger-table-wrapper td .editable-select:focus { background: rgba(212,122,138,0.08); outline: 2px solid rgba(212,122,138,0.2); outline-offset: -1px; }
         .ledger-table-wrapper td .editable-select option { color: #333; }
         
-        /* ===== 整行灰色 - 最高优先级 ===== */
+        /* ===== 整行灰色 - 流程淘汰 ===== */
         .row-failed {
             background: #e8e4e2 !important;
         }
@@ -113,12 +114,24 @@
         .row-failed td .editable-select option {
             color: #333;
         }
-        .row-failed td .row-delete-btn {
-            color: #b0a09a !important;
+
+        /* ===== 整行灰色 - 删除状态 ===== */
+        .row-deleted {
+            background: #f0ecea !important;
+            opacity: 0.6 !important;
         }
-        .row-failed td .row-delete-btn:hover {
-            color: #d45a3a !important;
-            background: rgba(212,90,58,0.1) !important;
+        .row-deleted td {
+            background: #f0ecea !important;
+            color: #c0b0a8 !important;
+            border-bottom-color: #e0d8d0 !important;
+        }
+        .row-deleted td .editable-input,
+        .row-deleted td .editable-select {
+            color: #c0b0a8 !important;
+            background: transparent !important;
+        }
+        .row-deleted td .editable-select option {
+            color: #333;
         }
         
         /* ===== 隐藏列（流程控制用） ===== */
@@ -126,14 +139,22 @@
             display: none !important;
         }
         
-        .row-delete-btn { 
-            background: none; border: none; color: #d5b8b0; cursor: pointer; font-size: 0.9rem; 
-            padding: 2px 6px; border-radius: 8px; transition: all 0.2s; width: 100%;
+        .delete-action-cell { 
+            width: 120px; min-width: 100px; 
         }
-        .row-delete-btn:hover { color: #d45a3a; background: rgba(212,90,58,0.08); }
+        .delete-action-btn {
+            background: none; border: none; color: #d5b8b0; cursor: pointer; font-size: 0.8rem; 
+            padding: 2px 6px; border-radius: 8px; transition: all 0.2s; 
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+        }
+        .delete-action-btn:hover { color: #d45a3a; background: rgba(212,90,58,0.08); }
+        .delete-action-btn.confirm-delete { color: #d45a3a; font-weight: 700; }
+        .delete-action-btn.confirm-delete:hover { background: rgba(212,90,58,0.15); }
+        .delete-action-btn.restore-btn { color: #6a8a8a; }
+        .delete-action-btn.restore-btn:hover { background: rgba(106,138,138,0.1); color: #4a7a7a; }
         .ledger-empty { color: #c9b8b0; text-align: center; padding: 40px 0; font-size: 0.95rem; width: 100%; }
 
-        /* ===== 面试时间单元格特殊样式 - 日期时间分两行显示 ===== */
+        /* ===== 面试时间单元格特殊样式 ===== */
         .interview-time-cell {
             display: flex;
             flex-direction: column;
@@ -141,37 +162,6 @@
             justify-content: center;
             gap: 2px;
             min-height: 50px;
-        }
-        .interview-time-cell .time-date-row {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: #5a3a3e;
-        }
-        .interview-time-cell .time-time-row {
-            font-size: 0.72rem;
-            color: #8a7a7a;
-        }
-        .interview-time-cell .quick-time-btns {
-            display: flex;
-            gap: 4px;
-            margin-top: 2px;
-        }
-        .interview-time-cell .quick-time-btn {
-            background: rgba(212,122,138,0.1);
-            border: 1px solid rgba(212,122,138,0.3);
-            border-radius: 8px;
-            padding: 2px 6px;
-            font-size: 0.6rem;
-            cursor: pointer;
-            color: #d47a8a;
-            transition: all 0.15s;
-            font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
-            white-space: nowrap;
-        }
-        .interview-time-cell .quick-time-btn:hover {
-            background: #d47a8a;
-            color: white;
-            border-color: #d47a8a;
         }
         .interview-time-cell .time-input {
             width: 100%;
@@ -203,6 +193,7 @@
 
         /* 固定列宽 */
         .col-seq { width: 40px; min-width: 40px; max-width: 40px; }
+        .col-delete-actions { width: 120px; min-width: 100px; }
         .col-name { width: 80px; min-width: 70px; }
         .col-position { width: 100px; min-width: 80px; }
         .col-resume-date { width: 110px; min-width: 100px; }
@@ -212,7 +203,6 @@
         .col-interview-result { width: 120px; min-width: 120px; }
         .col-final { width: 100px; min-width: 90px; }
         .col-remark { width: 80px; min-width: 60px; }
-        .col-delete { width: 40px; min-width: 36px; max-width: 40px; }
 
         /* 日历 */
         .calendar-todo-container { flex: 1; display: flex; gap: 16px; overflow: hidden; margin-top: 10px; min-height: 0; flex-direction: column; }
@@ -224,9 +214,9 @@
         .calendar-panel .cal-header .cal-nav button:hover { background: #d47a8a; color: white; border-color: #d47a8a; }
         .calendar-panel .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; flex: 1; align-content: start; }
         .calendar-panel .cal-grid .cal-weekday { font-size: 0.6rem; color: #b0888a; text-align: center; padding: 4px 0; font-weight: 600; }
-        .calendar-panel .cal-grid .cal-weekday.weekend { color: #d47a8a; }
-        .calendar-panel .cal-grid .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.8rem; color: #5a3a3e; cursor: pointer; transition: all 0.15s; position: relative; min-height: 32px; background: transparent; }
-        .calendar-panel .cal-grid .cal-day.weekend-day { color: #d47a8a; font-weight: 600; }
+        .calendar-panel .cal-grid .cal-weekday.weekend { color: #b0888a; }
+.calendar-panel .cal-grid .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.8rem; color: #5a3a3e; cursor: pointer; transition: all 0.15s; position: relative; min-height: 32px; background: transparent; }
+.calendar-panel .cal-grid .cal-day.weekend-day { color: #5a3a3e; font-weight: 400; }
         .calendar-panel .cal-grid .cal-day.other-month { color: #d5c8c0; }
         .calendar-panel .cal-grid .cal-day.today { background: #d47a8a; color: white; font-weight: 700; }
         .calendar-panel .cal-grid .cal-day.has-event { border-bottom: 3px solid #d47a8a; }
@@ -276,7 +266,7 @@
 
         /* 岗位管理 */
         .position-container { flex: 1; display: flex; gap: 16px; overflow: hidden; margin-top: 10px; min-height: 0; }
-        .position-left { flex: 0 0 220px; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .position-left { flex: 0 0 280px; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .position-left .pos-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; margin-bottom: 6px; flex-shrink: 0; }
         .position-left .pos-company-input { padding: 6px 12px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.8rem; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; width: 100%; margin-bottom: 4px; flex-shrink: 0; background: #faf5f2; }
         .position-left .pos-company-input:focus { border-color: #d47a8a; background: white; }
@@ -290,11 +280,11 @@
         .position-left .pos-list { flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 3px; }
         .position-left .pos-list::-webkit-scrollbar { width: 3px; }
         .position-left .pos-list::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
-        .position-left .pos-item { padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; color: #5a3a3e; border: 1px solid transparent; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; text-align: left; background: transparent; }
+        .position-left .pos-item { padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; color: #5a3a3e; border: 1px solid transparent; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; text-align: left; background: transparent; display: flex; justify-content: space-between; align-items: center; }
         .position-left .pos-item:hover { background: rgba(212,122,138,0.06); }
         .position-left .pos-item.active { background: rgba(212,122,138,0.12); border-color: rgba(212,122,138,0.2); font-weight: 600; }
-        .position-left .pos-item .pos-del { float: right; background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.6rem; padding: 0 4px; }
-        .position-left .pos-item .pos-del:hover { color: #d45a3a; }
+        .position-left .pos-item .pos-del { background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.6rem; padding: 2px 6px; border-radius: 8px; transition: all 0.15s; }
+        .position-left .pos-item .pos-del:hover { color: #d45a3a; background: rgba(212,90,58,0.08); }
         .pos-edit-btn { background: none; border: 1px solid #e8ddd0; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; color: #7a6556; flex-shrink: 0; }
         .pos-edit-btn:hover { background: #d47a8a; color: white; border-color: #d47a8a; }
         .pos-edit-btn.editing { background: #d47a8a; color: white; border-color: #d47a8a; }
@@ -369,6 +359,63 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
 
+        /* ===== 自定义确认弹窗 ===== */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .confirm-modal.open { display: flex; }
+        .confirm-modal .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .confirm-modal .modal-box .modal-icon { font-size: 2.4rem; margin-bottom: 8px; }
+        .confirm-modal .modal-box h3 { color: #5a3a3e; font-size: 1.05rem; margin-bottom: 4px; }
+        .confirm-modal .modal-box p { color: #8a7a7a; font-size: 0.85rem; margin-bottom: 16px; }
+        .confirm-modal .modal-box .btn-group { display: flex; gap: 10px; justify-content: center; }
+        .confirm-modal .modal-box .btn-group button {
+            padding: 8px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+        }
+        .confirm-modal .modal-box .btn-group .btn-cancel {
+            background: #f0e8e5;
+            color: #7a6556;
+        }
+        .confirm-modal .modal-box .btn-group .btn-cancel:hover {
+            background: #e5ddd8;
+        }
+        .confirm-modal .modal-box .btn-group .btn-confirm {
+            background: #d45a3a;
+            color: white;
+        }
+        .confirm-modal .modal-box .btn-group .btn-confirm:hover {
+            background: #c04a2a;
+        }
+        .confirm-modal .modal-box .btn-group .btn-confirm-safe {
+            background: #6a8a8a;
+            color: white;
+        }
+        .confirm-modal .modal-box .btn-group .btn-confirm-safe:hover {
+            background: #4a7a7a;
+        }
+
         @media (max-width: 900px) {
             .nav-sidebar { width: 70px; min-width: 70px; padding: 16px 0; }
             .nav-btn { width: 56px; height: 56px; font-size: 0.7rem; }
@@ -399,6 +446,8 @@
             .links-add-row input { width: 100%; }
             .links-container .links-grid { grid-template-columns: 1fr; }
             .interview-count-control { font-size: 0.7rem; padding: 2px 10px; }
+            .col-delete-actions { width: 100px; min-width: 80px; }
+            .delete-action-cell { width: 100px; min-width: 80px; }
         }
         @media (max-width: 480px) {
             .nav-sidebar { width: 56px; min-width: 56px; padding: 10px 0; }
@@ -410,6 +459,8 @@
             .page-header .title { font-size: 1rem; }
             .ledger-table-wrapper table { min-width: 1000px; }
             .stats-card { padding: 10px 12px; }
+            .col-delete-actions { width: 80px; min-width: 70px; }
+            .delete-action-cell { width: 80px; min-width: 70px; }
         }
     </style>
 </head>
@@ -499,8 +550,11 @@
                     <div class="pos-label">🎯 KPI设置</div>
                     <div style="display:flex;gap:4px;align-items:flex-start;flex-shrink:0;"><div class="pos-kpi-area" style="flex:1;"><textarea id="posKpiInput" placeholder="如：每周完成3人一面&#10;每月入职2人" readonly style="background:#faf5f2;"></textarea></div><button class="pos-edit-btn" id="posKpiEditBtn" style="margin-top:4px;">✏️</button></div>
                     <div class="pos-title" style="margin-top:6px;">📂 岗位列表</div>
-                    <button class="pos-add-btn" id="posAddBtn">＋ 添加岗位</button>
-                    <div class="pos-list" id="posList"></div>
+<div style="display:flex;gap:6px;flex-shrink:0;margin-bottom:6px;">
+    <input type="text" id="posNameInput" placeholder="输入岗位名称..." style="flex:1;padding:6px 12px;border:1.5px solid #e8ddd0;border-radius:30px;font-size:0.78rem;outline:none;font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:white;">
+    <button class="pos-add-btn" id="posAddBtn" style="padding:6px 16px;width:auto;margin:0;">＋ 添加</button>
+</div>
+<div class="pos-list" id="posList"></div>
                 </div>
                 <div class="position-center">
                     <div class="pos-editor-title"><span id="posEditorTitle">📄 岗位描述 (JD)</span><button class="pos-edit-btn" id="posEditBtn">✏️ 编辑</button></div>
@@ -550,6 +604,19 @@
                     <button class="links-add-btn" id="linksAddBtn">＋ 添加</button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 自定义确认弹窗 ===== -->
+<div class="confirm-modal" id="confirmModal">
+    <div class="modal-box">
+        <div class="modal-icon" id="confirmIcon">⚠️</div>
+        <h3 id="confirmTitle">确认操作</h3>
+        <p id="confirmMessage">确定要执行此操作吗？</p>
+        <div class="btn-group">
+            <button class="btn-cancel" id="confirmCancel">取消</button>
+            <button class="btn-confirm" id="confirmOk">确定</button>
         </div>
     </div>
 </div>
@@ -641,8 +708,55 @@
     function getChineseHoliday(year, month, day) {
         const md = month + '-' + day;
         const map = { '1-1':'元旦','2-14':'情人节','3-8':'妇女节','4-1':'愚人节','5-1':'劳动节','6-1':'儿童节','10-1':'国庆节','12-25':'圣诞节' };
-        const jq = { '2-4':'立春','3-5':'惊蛰','4-5':'清明','5-5':'立夏','6-6':'芒种','7-7':'小暑','8-7':'立秋','9-7':'白露','10-8':'寒露','11-7':'立冬','12-7':'大雪' };
+        const jq = {  '1-1':'元旦','2-14':'情人节','3-8':'妇女节','4-1':'愚人节','5-1':'劳动节','6-1':'儿童节','10-1':'国庆节','12-25':'圣诞节'};
         return map[md] || jq[md] || '';
+    }
+
+    // ============================================================
+    //  自定义确认弹窗
+    // ============================================================
+    let confirmCallback = null;
+    function showConfirm(icon, title, message, isDanger = true) {
+        return new Promise((resolve) => {
+            document.getElementById('confirmIcon').textContent = icon || '⚠️';
+            document.getElementById('confirmTitle').textContent = title || '确认操作';
+            document.getElementById('confirmMessage').textContent = message || '确定要执行此操作吗？';
+            const okBtn = document.getElementById('confirmOk');
+            okBtn.className = isDanger ? 'btn-confirm' : 'btn-confirm-safe';
+            document.getElementById('confirmModal').classList.add('open');
+            confirmCallback = resolve;
+        });
+    }
+    document.getElementById('confirmCancel').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.remove('open');
+        if (confirmCallback) { confirmCallback(false); confirmCallback = null; }
+    });
+    document.getElementById('confirmOk').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.remove('open');
+        if (confirmCallback) { confirmCallback(true); confirmCallback = null; }
+    });
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('open');
+            if (confirmCallback) { confirmCallback(false); confirmCallback = null; }
+        }
+    });
+
+    // ============================================================
+    //  更新顶部信息
+    // ============================================================
+    function updateGreeting() {
+        document.getElementById('companyNameDisplay').textContent = data.companyName || '公司';
+        const startDate = data.startDate;
+        if (startDate) {
+            const start = new Date(startDate);
+            const now = new Date();
+            const days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('workDaysDisplay').textContent = days >= 0 ? days + 1 : 0;
+        } else {
+            document.getElementById('workDaysDisplay').textContent = '?';
+        }
+        document.getElementById('kpiDisplay').textContent = '📌 KPI：' + (data.kpiText || '未设置');
     }
 
     // ============================================================
@@ -660,7 +774,7 @@
     });
 
     // ============================================================
-    //  ★★★ 核心：判断是否整行变灰 ★★★
+    //  核心：判断是否整行变灰（流程淘汰）
     // ============================================================
     function isRowFailed(row, count) {
         if (row.resumeStatus === '不通过') return true;
@@ -672,10 +786,10 @@
     }
 
     // ============================================================
-    //  ★★★ 核心：判断某一列是否显示（流程控制）★★★
+    //  核心：判断某一列是否显示（流程控制）
     // ============================================================
     function shouldShowColumn(row, colKey, count) {
-        if (['name', 'position', 'resumeDate', 'resumeStatus', 'remark', 'delete'].includes(colKey)) {
+        if (['name', 'position', 'resumeDate', 'resumeStatus', 'remark', 'deleteActions'].includes(colKey)) {
             return true;
         }
         if (colKey === 'phone') {
@@ -713,9 +827,10 @@
         const count = data.interviewCount || 3;
         document.getElementById('interviewCountDisplay').textContent = count;
 
-        // 生成表头（删掉基本信息列）
+        // 生成表头（序号 + 删除操作列在最前面）
         let headerHtml = `
             <th class="col-seq">序号</th>
+            <th class="col-delete-actions">操作</th>
             <th class="col-name">姓名</th>
             <th class="col-position">投递岗位</th>
             <th class="col-resume-date">简历时间</th>
@@ -725,52 +840,69 @@
             headerHtml += `<th class="col-interview-time">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间</th>
                            <th class="col-interview-result">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果</th>`;
         }
-        headerHtml += `<th class="col-final">审批/入职</th><th class="col-remark">备注</th><th class="col-delete"></th>`;
+        headerHtml += `<th class="col-final">审批/入职</th><th class="col-remark">备注</th>`;
         thead.innerHTML = headerHtml;
 
-        // colgroup（删掉基本信息列）
-        let colHtml = `<col class="col-seq"><col class="col-name"><col class="col-position"><col class="col-resume-date"><col class="col-resume-status"><col class="col-phone">`;
+        // colgroup
+        let colHtml = `<col class="col-seq"><col class="col-delete-actions"><col class="col-name"><col class="col-position"><col class="col-resume-date"><col class="col-resume-status"><col class="col-phone">`;
         for (let i = 1; i <= count; i++) {
             colHtml += `<col class="col-interview-time"><col class="col-interview-result">`;
         }
-        colHtml += `<col class="col-final"><col class="col-remark"><col class="col-delete">`;
+        colHtml += `<col class="col-final"><col class="col-remark">`;
         colgroup.innerHTML = colHtml;
 
         const sorted = [...data.ledger].sort((a, b) => b.id - a.id);
         if (sorted.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="${count*2+8}"><div class="ledger-empty">🌸 暂无候选人，点击右上角「添加候选人」开始</div></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${count*2+9}"><div class="ledger-empty">🌸 暂无候选人，点击右上角「添加候选人」开始</div></td></tr>`;
+            updateGreeting();
             return;
         }
 
-        // 构建每一行
         let rowsHtml = '';
         sorted.forEach((row, idx) => {
             const realIdx = data.ledger.length - idx;
             const positionOptions = data.positions.map(p => `<option value="${p.name}" ${row.position === p.name ? 'selected' : ''}>${p.name}</option>`).join('');
             const failed = isRowFailed(row, count);
+            const isDeleted = row._deleted === true;
 
-            let rowHtml = `<tr class="${failed ? 'row-failed' : ''}">`;
+            let rowClass = '';
+            if (isDeleted) rowClass = 'row-deleted';
+            else if (failed) rowClass = 'row-failed';
+
+            let rowHtml = `<tr class="${rowClass}">`;
             
             // 序号
             rowHtml += `<td class="col-seq">${realIdx}</td>`;
 
+            // 删除操作列（在序号后面）
+            rowHtml += `<td class="col-delete-actions delete-action-cell">`;
+            if (isDeleted) {
+                // 已删除状态：显示"恢复"和"永久删除"
+                rowHtml += `<button class="delete-action-btn restore-btn" data-action="restore" data-id="${row.id}">↩️ 恢复</button>`;
+                rowHtml += `<button class="delete-action-btn confirm-delete" data-action="permanent" data-id="${row.id}">✕ 永久删除</button>`;
+            } else {
+                // 正常状态：显示删除按钮（点击后进入删除状态）
+                rowHtml += `<button class="delete-action-btn" data-action="soft-delete" data-id="${row.id}">✕</button>`;
+            }
+            rowHtml += `</td>`;
+
             // 姓名
-            rowHtml += `<td class="col-name"><input class="editable-input name-input" type="text" value="${row.name || ''}" data-field="name" data-id="${row.id}" placeholder="姓名"></td>`;
+            rowHtml += `<td class="col-name"><input class="editable-input name-input" type="text" value="${row.name || ''}" data-field="name" data-id="${row.id}" placeholder="姓名" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></td>`;
 
             // 投递岗位
-            rowHtml += `<td class="col-position"><select class="editable-select" data-field="position" data-id="${row.id}"><option value="">请选择</option>${positionOptions}</select></td>`;
+            rowHtml += `<td class="col-position"><select class="editable-select" data-field="position" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">请选择</option>${positionOptions}</select></td>`;
 
             // 简历时间
-            rowHtml += `<td class="col-resume-date"><input class="editable-input" type="date" value="${row.resumeDate || ''}" data-field="resumeDate" data-id="${row.id}"></td>`;
+            rowHtml += `<td class="col-resume-date"><input class="editable-input" type="date" value="${row.resumeDate || ''}" data-field="resumeDate" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></td>`;
 
             // 简历通过
-            rowHtml += `<td class="col-resume-status"><select class="editable-select" data-field="resumeStatus" data-id="${row.id}"><option value="">待MT审核</option><option value="通过" ${row.resumeStatus === '通过' ? 'selected' : ''}>通过</option><option value="不通过" ${row.resumeStatus === '不通过' ? 'selected' : ''}>不通过</option></select></td>`;
+            rowHtml += `<td class="col-resume-status"><select class="editable-select" data-field="resumeStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">待MT审核</option><option value="通过" ${row.resumeStatus === '通过' ? 'selected' : ''}>通过</option><option value="不通过" ${row.resumeStatus === '不通过' ? 'selected' : ''}>不通过</option></select></td>`;
 
-            // 电话约面（下拉框）
+            // 电话约面
             const showPhone = shouldShowColumn(row, 'phone', count);
-            rowHtml += `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}"><option value="">请选择</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
+            rowHtml += `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">请选择</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
 
-            // 面试列（时间用datetime-local，结果用下拉框，结果分两行显示）
+            // 面试列
             for (let i = 1; i <= count; i++) {
                 const timeField = `interview${i}Time`;
                 const resultField = `interview${i}Result`;
@@ -781,19 +913,16 @@
                 const resultVal = row[resultField] || '';
                 const resultOptions = `<option value="">待业务<br>出结果</option><option value="通过" ${resultVal === '通过' ? 'selected' : ''}>通过</option><option value="未通过" ${resultVal === '未通过' ? 'selected' : ''}>未通过</option>`;
                 
-                rowHtml += `<td class="col-interview-time ${showTime ? '' : 'hidden-cell'}"><div class="interview-time-cell"><input class="time-input" type="datetime-local" value="${timeVal}" data-field="${timeField}" data-id="${row.id}"></div></td>`;
-                rowHtml += `<td class="col-interview-result ${showResult ? '' : 'hidden-cell'}"><select class="editable-select result-select" data-field="${resultField}" data-id="${row.id}">${resultOptions}</select></td>`;
+                rowHtml += `<td class="col-interview-time ${showTime ? '' : 'hidden-cell'}"><div class="interview-time-cell"><input class="time-input" type="datetime-local" value="${timeVal}" data-field="${timeField}" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></div></td>`;
+                rowHtml += `<td class="col-interview-result ${showResult ? '' : 'hidden-cell'}"><select class="editable-select result-select" data-field="${resultField}" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}>${resultOptions}</select></td>`;
             }
 
             // 审批/入职
             const showFinal = shouldShowColumn(row, 'final', count);
-            rowHtml += `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}"><option value="">未入职</option><option value="是" ${row.finalStatus === '是' ? 'selected' : ''}>是</option><option value="否" ${row.finalStatus === '否' ? 'selected' : ''}>否</option></select></td>`;
+            rowHtml += `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">未入职</option><option value="是" ${row.finalStatus === '是' ? 'selected' : ''}>是</option><option value="否" ${row.finalStatus === '否' ? 'selected' : ''}>否</option></select></td>`;
 
             // 备注
-            rowHtml += `<td class="col-remark"><input class="editable-input" type="text" value="${row.remark || ''}" data-field="remark" data-id="${row.id}"></td>`;
-
-            // 删除按钮（固定在备注右侧）
-            rowHtml += `<td class="col-delete"><button class="row-delete-btn" data-id="${row.id}">✕</button></td>`;
+            rowHtml += `<td class="col-remark"><input class="editable-input" type="text" value="${row.remark || ''}" data-field="remark" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></td>`;
 
             rowHtml += `</tr>`;
             rowsHtml += rowHtml;
@@ -801,7 +930,7 @@
 
         tbody.innerHTML = rowsHtml;
 
-        // ===== 事件绑定 =====
+        // ===== 事件绑定：数据变更 =====
         tbody.querySelectorAll('.editable-input, .editable-select, .time-input').forEach(el => {
             el.addEventListener('change', function() {
                 const id = parseInt(this.dataset.id);
@@ -809,6 +938,7 @@
                 const val = this.value;
                 const row = data.ledger.find(r => r.id === id);
                 if (!row) return;
+                if (row._deleted) return; // 已删除不可编辑
 
                 if (field === 'resumeStatus' && (val === '不通过' || val === '')) {
                     row.phoneNote = '';
@@ -843,37 +973,49 @@
             });
         });
 
-        // 删除按钮
-        tbody.querySelectorAll('.row-delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+        // ===== 事件绑定：删除操作 =====
+        tbody.querySelectorAll('.delete-action-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
                 const id = parseInt(this.dataset.id);
-                if (confirm('确定删除该候选人吗？')) {
-                    data.ledger = data.ledger.filter(r => r.id !== id);
+                const action = this.dataset.action;
+                const row = data.ledger.find(r => r.id === id);
+                if (!row) return;
+
+                if (action === 'soft-delete') {
+                    // 软删除：标记为删除状态
+                    row._deleted = true;
                     saveData();
                     renderAll();
+                } else if (action === 'restore') {
+                    // 恢复：取消删除标记
+                    delete row._deleted;
+                    saveData();
+                    renderAll();
+                } else if (action === 'permanent') {
+                    // 永久删除：需要二次确认
+                    const confirmed = await showConfirm(
+                        '⚠️',
+                        '永久删除候选人',
+                        `确定要永久删除「${row.name || '未命名'}」吗？此操作不可恢复！`,
+                        true
+                    );
+                    if (confirmed) {
+                        data.ledger = data.ledger.filter(r => r.id !== id);
+                        saveData();
+                        renderAll();
+                    }
                 }
             });
         });
 
-        // 更新顶部信息
-        document.getElementById('companyNameDisplay').textContent = data.companyName || '公司';
-        const startDate = data.startDate;
-        if (startDate) {
-            const start = new Date(startDate);
-            const now = new Date();
-            const days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-            document.getElementById('workDaysDisplay').textContent = days >= 0 ? days+1 : 0;
-        } else {
-            document.getElementById('workDaysDisplay').textContent = '?';
-        }
-        document.getElementById('kpiDisplay').textContent = '📌 KPI：' + (data.kpiText || '未设置');
-
+        updateGreeting();
         checkDuplicates();
     }
 
     function checkDuplicates() {
         const groups = {};
         data.ledger.forEach(row => {
+            if (row._deleted) return;
             const key = (row.name || '') + '|' + (row.position || '');
             if (key && row.name && row.position) {
                 if (!groups[key]) groups[key] = [];
@@ -907,36 +1049,41 @@
 
     // 面试轮次增减
     document.getElementById('incInterviewCount').addEventListener('click', function() {
-        if (data.interviewCount < 10) { data.interviewCount++; saveData(); renderAll(); }
+        if (data.interviewCount < 5) { data.interviewCount++; saveData(); renderAll(); }
     });
     document.getElementById('decInterviewCount').addEventListener('click', function() {
         if (data.interviewCount > 1) { data.interviewCount--; saveData(); renderAll(); }
     });
 
-    // 导出
+    // 导出 Excel
     document.getElementById('exportExcelBtn').addEventListener('click', function() {
-        if (data.ledger.length === 0) { alert('暂无数据可导出'); return; }
+        const activeRows = data.ledger.filter(r => !r._deleted);
+        if (activeRows.length === 0) { alert('暂无数据可导出'); return; }
+        
         const count = data.interviewCount || 3;
-        let header = '序号,姓名,投递岗位,简历时间,简历通过,电话约面';
+        let rows = [];
+        let header = ['序号', '姓名', '投递岗位', '简历时间', '简历通过', '电话约面'];
         for (let i = 1; i <= count; i++) {
-            header += `,${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间,${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果`;
+            header.push(`${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间`);
+            header.push(`${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果`);
         }
-        header += ',审批/入职,备注';
-        let csv = '\uFEFF' + header + '\n';
-        data.ledger.forEach((r, idx) => {
-            let line = `${idx+1},${r.name||''},${r.position||''},${r.resumeDate||''},${r.resumeStatus||''},${r.phoneNote||''}`;
+        header.push('审批/入职', '备注');
+        rows.push(header);
+        
+        activeRows.forEach((r, idx) => {
+            let line = [idx+1, r.name||'', r.position||'', r.resumeDate||'', r.resumeStatus||'', r.phoneNote||''];
             for (let i = 1; i <= count; i++) {
-                line += `,${r[`interview${i}Time`]||''},${r[`interview${i}Result`]||''}`;
+                line.push(r[`interview${i}Time`]||'');
+                line.push(r[`interview${i}Result`]||'');
             }
-            line += `,${r.finalStatus||''},${r.remark||''}`;
-            csv += line + '\n';
+            line.push(r.finalStatus||'', r.remark||'');
+            rows.push(line);
         });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `社招台账_${getToday()}.csv`;
-        link.click();
-        URL.revokeObjectURL(link.href);
+        
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, '社招台账');
+        XLSX.writeFile(wb, `社招台账_${getToday()}.xlsx`);
     });
 
     // 添加候选人
@@ -969,6 +1116,7 @@
         const today = getToday();
         const interviewDates = new Set();
         data.ledger.forEach(row => {
+            if (row._deleted) return;
             for (let i = 1; i <= 10; i++) {
                 if (row[`interview${i}Time`]) {
                     const d = row[`interview${i}Time`].substring(0, 10);
@@ -1014,6 +1162,7 @@
         if (!dateStr) { container.innerHTML = '点击日期查看'; return; }
         const events = [];
         data.ledger.forEach(row => {
+            if (row._deleted) return;
             for (let i = 1; i <= 10; i++) {
                 const time = row[`interview${i}Time`];
                 if (time && time.substring(0, 10) === dateStr) {
@@ -1101,9 +1250,9 @@
     function renderPositions() {
         const list = document.getElementById('posList');
         if (data.positions.length === 0) list.innerHTML = '<div style="color:#c9b8b0;font-size:0.75rem;text-align:center;padding:12px 0;">暂无岗位</div>';
-        else list.innerHTML = data.positions.map(p => `<button class="pos-item ${data.selectedPositionId === p.id ? 'active' : ''}" data-id="${p.id}">${p.name}<button class="pos-del" data-id="${p.id}">✕</button></button>`).join('');
-        list.querySelectorAll('.pos-item').forEach(btn => {
-            btn.addEventListener('click', function(e) {
+        else list.innerHTML = data.positions.map(p => `<div class="pos-item ${data.selectedPositionId === p.id ? 'active' : ''}" data-id="${p.id}"><span>${p.name}</span><button class="pos-del" data-id="${p.id}">✕</button></div>`).join('');
+        list.querySelectorAll('.pos-item').forEach(item => {
+            item.addEventListener('click', function(e) {
                 if (e.target.classList.contains('pos-del')) return;
                 const id = parseInt(this.dataset.id);
                 data.selectedPositionId = id;
@@ -1111,12 +1260,25 @@
             });
         });
         list.querySelectorAll('.pos-del').forEach(btn => {
-            btn.addEventListener('click', function(e) {
+            btn.addEventListener('click', async function(e) {
                 e.stopPropagation();
                 const id = parseInt(this.dataset.id);
-                if (confirm('确定删除该岗位吗？')) {
+                const pos = data.positions.find(p => p.id === id);
+                if (!pos) return;
+                // 使用自定义确认弹窗
+                const confirmed = await showConfirm(
+                    '⚠️',
+                    '删除岗位',
+                    `确定要删除岗位「${pos.name}」吗？\n（岗位名称将从候选人的下拉选项中移除）`,
+                    true
+                );
+                if (confirmed) {
                     data.positions = data.positions.filter(p => p.id !== id);
                     if (data.selectedPositionId === id) data.selectedPositionId = null;
+                    // 同时清空已绑定该岗位的候选人的岗位字段
+                    data.ledger.forEach(r => {
+                        if (r.position === pos.name) r.position = '';
+                    });
                     saveData(); renderPositions(); loadPositionData(null);
                 }
             });
@@ -1214,6 +1376,7 @@
                 this.textContent = '✏️';
                 this.classList.remove('editing');
                 saveData();
+                updateGreeting();
                 renderAll();
             } else {
                 input.readOnly = false;
@@ -1237,7 +1400,9 @@
             kpiEditing = false;
             this.textContent = '✏️';
             this.classList.remove('editing');
-            saveData(); renderAll();
+            saveData();
+            updateGreeting();
+            renderAll();
         } else {
             input.readOnly = false;
             input.style.background = 'white';
@@ -1248,32 +1413,42 @@
         }
     });
 
+    // 添加岗位（从输入框读取）
     document.getElementById('posAddBtn').addEventListener('click', function() {
-        const name = prompt('请输入岗位名称：');
-        if (!name || !name.trim()) return;
-        if (data.positions.some(p => p.name === name.trim())) { alert('该岗位已存在！'); return; }
-        data.positions.push({ id: genId(), name: name.trim(), jd: '', tip: '' });
+        const input = document.getElementById('posNameInput');
+        const name = input.value.trim();
+        if (!name) { alert('请输入岗位名称'); return; }
+        if (data.positions.some(p => p.name === name)) { alert('该岗位已存在！'); return; }
+        data.positions.push({ id: genId(), name: name, jd: '', tip: '' });
         data.selectedPositionId = data.positions[data.positions.length - 1].id;
+        input.value = '';
         saveData(); renderPositions(); loadPositionData(data.selectedPositionId);
+    });
+
+    document.getElementById('posNameInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('posAddBtn').click();
+        }
     });
 
     // ============================================================
     //  数据统计
     // ============================================================
     function renderStats() {
+        const activeRows = data.ledger.filter(r => !r._deleted);
         const weekStart = getWeekStart();
         const monthStart = getMonthStart();
 
-        const resumeTotal = data.ledger.length;
-        const resumeWeek = data.ledger.filter(r => r.resumeDate && r.resumeDate >= weekStart).length;
-        const resumeMonth = data.ledger.filter(r => r.resumeDate && r.resumeDate >= monthStart).length;
+        const resumeTotal = activeRows.length;
+        const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart).length;
+        const resumeMonth = activeRows.filter(r => r.resumeDate && r.resumeDate >= monthStart).length;
         document.getElementById('statResumeTotal').textContent = resumeTotal;
         document.getElementById('statResumeWeek').textContent = resumeWeek;
         document.getElementById('statResumeMonth').textContent = resumeMonth;
-        document.getElementById('statResumeNames').innerHTML = data.ledger.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
+        document.getElementById('statResumeNames').innerHTML = activeRows.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
 
         const count = data.interviewCount || 3;
-        const interviewRows = data.ledger.filter(r => {
+        const interviewRows = activeRows.filter(r => {
             for (let i = 1; i <= count; i++) { if (r[`interview${i}Time`]) return true; }
             return false;
         });
@@ -1292,7 +1467,7 @@
         document.getElementById('statInterviewNames').innerHTML = interviewRows.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
 
         let passTotal = 0, totalPass = 0, passMonth = 0, totalPassMonth = 0;
-        data.ledger.forEach(r => {
+        activeRows.forEach(r => {
             for (let i = 1; i <= count; i++) {
                 const time = r[`interview${i}Time`];
                 const inMonth = time && time.substring(0,10) >= monthStart;
@@ -1303,13 +1478,13 @@
         });
         document.getElementById('statPassRateTotal').textContent = totalPass > 0 ? Math.round(passTotal/totalPass*100) + '%' : '0%';
         document.getElementById('statPassRateMonth').textContent = totalPassMonth > 0 ? Math.round(passMonth/totalPassMonth*100) + '%' : '0%';
-        const passNames = data.ledger.filter(r => {
+        const passNames = activeRows.filter(r => {
             for (let i = 1; i <= count; i++) { if (r[`interview${i}Result`] === '通过') return true; }
             return false;
         }).map(r => r.name).filter(Boolean);
         document.getElementById('statPassNames').innerHTML = passNames.map(n => `<span class="name-tag">${n}</span>`).join('');
 
-        const offerRows = data.ledger.filter(r => r.finalStatus === '是');
+        const offerRows = activeRows.filter(r => r.finalStatus === '是');
         const offerTotal = offerRows.length;
         const offerMonth = offerRows.filter(r => {
             for (let i = count; i >= 1; i--) {
@@ -1367,6 +1542,7 @@
     //  全部渲染
     // ============================================================
     function renderAll() {
+        updateGreeting();
         renderLedger();
         renderCalendar();
         renderTodos();
