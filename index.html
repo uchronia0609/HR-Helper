@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>🌸 HR实习生小助手 · 流程增强版</title>
+    <title>🌸 HRmeow</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -657,7 +657,7 @@
     function genId() { return ++data._idCounter; }
     
     if (!loadData()) {
-        data.companyName = '未命名公司';
+        data.companyName = '公司';
         data.startDate = '';
         data.kpiText = '';
         data.ledger = [];
@@ -1554,7 +1554,7 @@
 
     renderAll();
     window.addEventListener('beforeunload', function() { saveData(); });
-    console.log('🌸 HR实习生小助手 · 流程增强版已启动！');
+    console.log('🌸 HRmeow· 流程增强版已启动！');
 </script>
 </body>
 </html>
