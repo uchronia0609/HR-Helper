@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🌸 HR实习生小助手 · 流程增强版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background: #fdf6f3;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .nav-sidebar {
+            width: 88px;
+            min-width: 88px;
+            background: rgba(255, 240, 235, 0.85);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(235, 210, 200, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 10px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            height: 100vh;
+        }
+        .nav-sidebar .logo { font-size: 1.8rem; font-weight: 700; color: #d47a8a; padding-bottom: 16px; margin-bottom: 10px; border-bottom: 2px solid rgba(212,122,138,0.2); width: 100%; text-align: center; }
+        .nav-btn {
+            width: 72px; height: 72px; border: none; border-radius: 20px; background: transparent;
+            color: #b0888a; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif; letter-spacing: 0.5px; flex-shrink: 0;
+        }
+        .nav-btn .icon { font-size: 2rem; line-height: 1; }
+        .nav-btn .label { font-size: 0.7rem; opacity: 0.9; }
+        .nav-btn:hover { background: rgba(212,122,138,0.1); color: #d47a8a; }
+        .nav-btn.active { background: #d47a8a; color: white; box-shadow: 0 4px 16px rgba(212,122,138,0.3); }
+
+        .main-content { flex: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; background: #fdf6f3; min-width: 0; }
+        .page-container { flex: 1; height: 100%; overflow: hidden; display: none; padding: 16px 20px 20px 20px; }
+        .page-container.active { display: flex; flex-direction: column; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 2px solid rgba(235,210,200,0.3); flex-shrink: 0; }
+        .page-header .title { font-size: 1.5rem; font-weight: 700; color: #5a3a3e; letter-spacing: 1px; }
+
+        .ledger-container { flex: 1; overflow: hidden; display: flex; flex-direction: column; margin-top: 10px; min-height: 0; }
+        .ledger-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; padding-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+        .ledger-header .left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .ledger-header .left .greeting { font-size: 1.1rem; font-weight: 600; color: #5a3a3e; }
+        .ledger-header .left .greeting .highlight { color: #d47a8a; }
+        .ledger-header .left .kpi-text { font-size: 0.8rem; color: #b0888a; background: rgba(212,122,138,0.08); padding: 4px 14px; border-radius: 20px; }
+        .ledger-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .add-row-btn, .export-excel-btn { background: #d47a8a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; flex-shrink: 0; }
+        .export-excel-btn { background: #6a8a8a; }
+        .add-row-btn:hover { background: #c06a7a; transform: scale(1.02); }
+        .export-excel-btn:hover { background: #4a7a7a; transform: scale(1.02); }
+        .interview-count-control { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #5a3a3e; background: rgba(235,210,200,0.3); padding: 4px 14px; border-radius: 30px; }
+        .interview-count-control button { background: none; border: 1px solid #d5c8c0; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: 700; color: #5a3a3e; transition: all 0.2s; }
+        .interview-count-control button:hover { background: #d47a8a; color: white; border-color: #d47a8a; }
+        .interview-count-control span { min-width: 24px; text-align: center; font-weight: 700; }
+
+        .ledger-table-wrapper { flex: 1; overflow: auto; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); background: white; min-height: 0; }
+        .ledger-table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 1200px; table-layout: fixed; }
+        .ledger-table-wrapper thead { position: sticky; top: 0; z-index: 10; }
+        .ledger-table-wrapper th { 
+            background: #f8edea; color: #5a3a3e; font-weight: 600; padding: 8px 4px; text-align: center; 
+            border-bottom: 2px solid #e8d5ce; font-size: 0.72rem; white-space: nowrap; letter-spacing: 0.5px; 
+            position: sticky; top: 0; z-index: 10; overflow: hidden; text-overflow: ellipsis;
+        }
+        .ledger-table-wrapper td { 
+            padding: 0px 0px; border-bottom: 1px solid #f0e5e0; text-align: center; vertical-align: middle; 
+            overflow: hidden; min-height: 50px;
+        }
+        .ledger-table-wrapper td .editable-input { 
+            width: 100%; border: none; background: transparent; text-align: center; font-size: 0.78rem; 
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif; color: #3a2a2e; padding: 4px 2px; 
+            border-radius: 4px; transition: background 0.2s; min-height: 36px; box-sizing: border-box;
+        }
+        .ledger-table-wrapper td .editable-input:hover { background: rgba(212,122,138,0.05); }
+        .ledger-table-wrapper td .editable-input:focus { background: rgba(212,122,138,0.08); outline: 2px solid rgba(212,122,138,0.2); outline-offset: -1px; }
+        .ledger-table-wrapper td .name-input { background: rgba(212,122,138,0.04); font-weight: 500; caret-color: #d47a8a; }
+        .ledger-table-wrapper td .editable-select { 
+            width: 100%; border: none; background: transparent; text-align: center; font-size: 0.78rem; 
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif; color: #3a2a2e; padding: 4px 2px; 
+            border-radius: 4px; cursor: pointer; outline: none; min-height: 36px; box-sizing: border-box;
+        }
+        .ledger-table-wrapper td .editable-select:hover { background: rgba(212,122,138,0.05); }
+        .ledger-table-wrapper td .editable-select:focus { background: rgba(212,122,138,0.08); outline: 2px solid rgba(212,122,138,0.2); outline-offset: -1px; }
+        .ledger-table-wrapper td .editable-select option { color: #333; }
+        
+        /* ===== 整行灰色 - 最高优先级 ===== */
+        .row-failed {
+            background: #e8e4e2 !important;
+        }
+        .row-failed td {
+            background: #e8e4e2 !important;
+            color: #b0a09a !important;
+            border-bottom-color: #d5d0cd !important;
+        }
+        .row-failed td .editable-input,
+        .row-failed td .editable-select {
+            color: #b0a09a !important;
+            background: transparent !important;
+        }
+        .row-failed td .editable-select option {
+            color: #333;
+        }
+        .row-failed td .row-delete-btn {
+            color: #b0a09a !important;
+        }
+        .row-failed td .row-delete-btn:hover {
+            color: #d45a3a !important;
+            background: rgba(212,90,58,0.1) !important;
+        }
+        
+        /* ===== 隐藏列（流程控制用） ===== */
+        .hidden-cell {
+            display: none !important;
+        }
+        
+        .row-delete-btn { 
+            background: none; border: none; color: #d5b8b0; cursor: pointer; font-size: 0.9rem; 
+            padding: 2px 6px; border-radius: 8px; transition: all 0.2s; width: 100%;
+        }
+        .row-delete-btn:hover { color: #d45a3a; background: rgba(212,90,58,0.08); }
+        .ledger-empty { color: #c9b8b0; text-align: center; padding: 40px 0; font-size: 0.95rem; width: 100%; }
+
+        /* ===== 面试时间单元格特殊样式 - 日期时间分两行显示 ===== */
+        .interview-time-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            min-height: 50px;
+        }
+        .interview-time-cell .time-date-row {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: #5a3a3e;
+        }
+        .interview-time-cell .time-time-row {
+            font-size: 0.72rem;
+            color: #8a7a7a;
+        }
+        .interview-time-cell .quick-time-btns {
+            display: flex;
+            gap: 4px;
+            margin-top: 2px;
+        }
+        .interview-time-cell .quick-time-btn {
+            background: rgba(212,122,138,0.1);
+            border: 1px solid rgba(212,122,138,0.3);
+            border-radius: 8px;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            color: #d47a8a;
+            transition: all 0.15s;
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+            white-space: nowrap;
+        }
+        .interview-time-cell .quick-time-btn:hover {
+            background: #d47a8a;
+            color: white;
+            border-color: #d47a8a;
+        }
+        .interview-time-cell .time-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 0.72rem;
+            font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+            color: #3a2a2e;
+            padding: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            min-height: 24px;
+        }
+        .interview-time-cell .time-input:hover {
+            background: rgba(212,122,138,0.05);
+        }
+
+        /* ===== 结果下拉框两行显示 ===== */
+        .result-select {
+            white-space: normal !important;
+            line-height: 1.3 !important;
+            padding: 4px 2px !important;
+        }
+        .result-select option {
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        /* 固定列宽 */
+        .col-seq { width: 40px; min-width: 40px; max-width: 40px; }
+        .col-name { width: 80px; min-width: 70px; }
+        .col-position { width: 100px; min-width: 80px; }
+        .col-resume-date { width: 110px; min-width: 100px; }
+        .col-resume-status { width: 100px; min-width: 90px; }
+        .col-phone { width: 100px; min-width: 90px; }
+        .col-interview-time { width: 140px; min-width: 140px; }
+        .col-interview-result { width: 120px; min-width: 120px; }
+        .col-final { width: 100px; min-width: 90px; }
+        .col-remark { width: 80px; min-width: 60px; }
+        .col-delete { width: 40px; min-width: 36px; max-width: 40px; }
+
+        /* 日历 */
+        .calendar-todo-container { flex: 1; display: flex; gap: 16px; overflow: hidden; margin-top: 10px; min-height: 0; flex-direction: column; }
+        .calendar-top { display: flex; gap: 16px; flex: 1; overflow: hidden; min-height: 0; }
+        .calendar-panel { flex: 0 0 380px; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 16px; overflow-y: auto; display: flex; flex-direction: column; }
+        .calendar-panel .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0; }
+        .calendar-panel .cal-header .cal-month { font-size: 1.05rem; font-weight: 600; color: #5a3a3e; }
+        .calendar-panel .cal-header .cal-nav button { background: none; border: 1px solid #e8ddd0; border-radius: 30px; padding: 4px 14px; cursor: pointer; font-size: 0.75rem; color: #7a6556; transition: all 0.2s; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; }
+        .calendar-panel .cal-header .cal-nav button:hover { background: #d47a8a; color: white; border-color: #d47a8a; }
+        .calendar-panel .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; flex: 1; align-content: start; }
+        .calendar-panel .cal-grid .cal-weekday { font-size: 0.6rem; color: #b0888a; text-align: center; padding: 4px 0; font-weight: 600; }
+        .calendar-panel .cal-grid .cal-weekday.weekend { color: #d47a8a; }
+        .calendar-panel .cal-grid .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.8rem; color: #5a3a3e; cursor: pointer; transition: all 0.15s; position: relative; min-height: 32px; background: transparent; }
+        .calendar-panel .cal-grid .cal-day.weekend-day { color: #d47a8a; font-weight: 600; }
+        .calendar-panel .cal-grid .cal-day.other-month { color: #d5c8c0; }
+        .calendar-panel .cal-grid .cal-day.today { background: #d47a8a; color: white; font-weight: 700; }
+        .calendar-panel .cal-grid .cal-day.has-event { border-bottom: 3px solid #d47a8a; }
+        .calendar-panel .cal-grid .cal-day .dot { width: 4px; height: 4px; border-radius: 50%; background: #d47a8a; margin-top: 1px; }
+        .calendar-panel .cal-grid .cal-day .sub-label { font-size: 0.45rem; color: #b0888a; line-height: 1; margin-top: 1px; }
+        .calendar-panel .cal-grid .cal-day.selected { background: rgba(212,122,138,0.25); border: 2px solid #d47a8a; }
+        .calendar-panel .cal-legend { font-size: 0.6rem; color: #b0888a; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0e5e0; flex-shrink: 0; display: flex; gap: 16px; justify-content: center; }
+        .calendar-panel .cal-legend span { display: flex; align-items: center; gap: 4px; }
+        .calendar-panel .cal-legend .dot-legend { width: 8px; height: 8px; border-radius: 50%; background: #d47a8a; display: inline-block; }
+        .day-detail { background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 12px 16px; margin-top: 6px; flex-shrink: 0; max-height: 120px; overflow-y: auto; }
+        .day-detail .detail-title { font-weight: 600; color: #5a3a3e; font-size: 0.85rem; }
+        .day-detail .detail-item { font-size: 0.78rem; color: #3a2a2e; padding: 2px 0; border-bottom: 1px dashed #f0e5e0; }
+
+        .todo-panel { flex: 1; display: flex; gap: 16px; overflow: hidden; min-width: 0; }
+        .todo-column { flex: 1; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 16px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .todo-column .todo-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .todo-column .todo-title .badge { font-size: 0.6rem; font-weight: 400; color: #b0888a; background: rgba(212,122,138,0.08); padding: 0 10px; border-radius: 20px; }
+        .todo-list { flex: 1; overflow-y: auto; min-height: 0; }
+        .todo-list::-webkit-scrollbar { width: 4px; }
+        .todo-list::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
+        .todo-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: 8px; transition: background 0.15s; border-bottom: 1px solid #f5ede8; font-size: 0.8rem; }
+        .todo-item:hover { background: rgba(212,122,138,0.04); }
+        .todo-item .todo-check { margin-top: 2px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d5c8c0; background: white; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .todo-item .todo-check:hover { border-color: #d47a8a; }
+        .todo-item .todo-check.done { background: #d47a8a; border-color: #d47a8a; color: white; }
+        .todo-item .todo-check.done::after { content: '✓'; font-size: 0.6rem; }
+        .todo-item .todo-text { flex: 1; color: #3a2a2e; word-break: break-word; line-height: 1.4; }
+        .todo-item .todo-text.done-text { text-decoration: line-through; color: #b8a8a0; }
+        .todo-item .todo-del { background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.7rem; padding: 0 2px; flex-shrink: 0; }
+        .todo-item .todo-del:hover { color: #d45a3a; }
+        .todo-add-row { display: flex; gap: 6px; margin-top: 8px; flex-shrink: 0; }
+        .todo-add-row input { flex: 1; padding: 6px 12px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.78rem; background: white; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; transition: border-color 0.2s; min-width: 0; }
+        .todo-add-row input:focus { border-color: #d47a8a; }
+        .todo-add-row button { background: #d47a8a; border: none; color: white; padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; white-space: nowrap; flex-shrink: 0; }
+        .todo-add-row button:hover { background: #c06a7a; }
+        .trash-btn { background: none; border: none; color: #b8a8a0; cursor: pointer; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; transition: all 0.2s; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; }
+        .trash-btn:hover { background: rgba(212,90,58,0.08); color: #d45a3a; }
+        .trash-modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1000; align-items: center; justify-content: center; }
+        .trash-modal.open { display: flex; }
+        .trash-modal .modal-content { background: white; border-radius: 24px; padding: 24px 28px; max-width: 500px; width: 90%; max-height: 70vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .trash-modal .modal-content h3 { color: #5a3a3e; margin-bottom: 12px; font-size: 1rem; }
+        .trash-modal .modal-content .trash-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f0e5e0; font-size: 0.8rem; }
+        .trash-modal .modal-content .trash-item .trash-restore { background: none; border: none; color: #d47a8a; cursor: pointer; font-size: 0.7rem; padding: 2px 10px; border-radius: 12px; }
+        .trash-modal .modal-content .trash-item .trash-restore:hover { background: rgba(212,122,138,0.08); }
+        .trash-modal .modal-close { margin-top: 12px; background: #e8ddd0; border: none; padding: 8px 24px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; width: 100%; }
+        .trash-modal .modal-close:hover { background: #d5c8b8; }
+
+        /* 岗位管理 */
+        .position-container { flex: 1; display: flex; gap: 16px; overflow: hidden; margin-top: 10px; min-height: 0; }
+        .position-left { flex: 0 0 220px; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .position-left .pos-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; margin-bottom: 6px; flex-shrink: 0; }
+        .position-left .pos-company-input { padding: 6px 12px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.8rem; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; width: 100%; margin-bottom: 4px; flex-shrink: 0; background: #faf5f2; }
+        .position-left .pos-company-input:focus { border-color: #d47a8a; background: white; }
+        .position-left .pos-label { font-size: 0.7rem; color: #b0888a; margin: 2px 0 2px 6px; flex-shrink: 0; }
+        .position-left .pos-date-input { padding: 6px 12px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.75rem; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; width: 100%; margin-bottom: 4px; flex-shrink: 0; background: #faf5f2; }
+        .position-left .pos-date-input:focus { border-color: #d47a8a; background: white; }
+        .position-left .pos-kpi-area textarea { width: 100%; padding: 6px 10px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-size: 0.7rem; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; resize: vertical; min-height: 40px; background: #faf5f2; }
+        .position-left .pos-kpi-area textarea:focus { border-color: #d47a8a; background: white; }
+        .position-left .pos-add-btn { background: #d47a8a; border: none; color: white; padding: 6px 0; border-radius: 30px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; width: 100%; flex-shrink: 0; margin: 4px 0; }
+        .position-left .pos-add-btn:hover { background: #c06a7a; }
+        .position-left .pos-list { flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 3px; }
+        .position-left .pos-list::-webkit-scrollbar { width: 3px; }
+        .position-left .pos-list::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
+        .position-left .pos-item { padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; color: #5a3a3e; border: 1px solid transparent; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; text-align: left; background: transparent; }
+        .position-left .pos-item:hover { background: rgba(212,122,138,0.06); }
+        .position-left .pos-item.active { background: rgba(212,122,138,0.12); border-color: rgba(212,122,138,0.2); font-weight: 600; }
+        .position-left .pos-item .pos-del { float: right; background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.6rem; padding: 0 4px; }
+        .position-left .pos-item .pos-del:hover { color: #d45a3a; }
+        .pos-edit-btn { background: none; border: 1px solid #e8ddd0; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; color: #7a6556; flex-shrink: 0; }
+        .pos-edit-btn:hover { background: #d47a8a; color: white; border-color: #d47a8a; }
+        .pos-edit-btn.editing { background: #d47a8a; color: white; border-color: #d47a8a; }
+
+        .position-center { flex: 1; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 16px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .position-center .pos-editor-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .position-center .pos-editor-content { flex: 1; overflow: hidden; min-height: 0; }
+        .position-center .pos-editor-content textarea { width: 100%; height: 100%; padding: 10px 12px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-size: 0.8rem; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; resize: none; outline: none; background: #faf5f2; color: #3a2a2e; transition: border-color 0.2s, background 0.2s; }
+        .position-center .pos-editor-content textarea:focus { border-color: #d47a8a; background: white; }
+        .position-center .pos-editor-content textarea:read-only { cursor: default; background: #faf5f2; }
+
+        .position-right { flex: 0 0 240px; background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 16px; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .position-right .pos-tip-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .position-right .pos-tip-content { flex: 1; overflow: hidden; min-height: 0; }
+        .position-right .pos-tip-content textarea { width: 100%; height: 100%; padding: 10px 12px; border: 1.5px solid #e8ddd0; border-radius: 12px; font-size: 0.8rem; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; resize: none; outline: none; background: #faf5f2; color: #3a2a2e; transition: border-color 0.2s; }
+        .position-right .pos-tip-content textarea:focus { border-color: #d47a8a; background: white; }
+
+        /* 数据统计 */
+        .stats-container { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; min-height: 0; align-content: start; }
+        .stats-card { background: white; border-radius: 16px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 18px; display: flex; flex-direction: column; }
+        .stats-card .stats-label { font-size: 0.8rem; color: #b0888a; letter-spacing: 1px; font-weight: 600; }
+        .stats-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f5ede8; font-size: 0.85rem; }
+        .stats-row .stat-num { font-weight: 700; color: #d47a8a; }
+        .stats-sub-names { font-size: 0.7rem; color: #5a3a3e; padding: 2px 0; max-height: 60px; overflow-y: auto; }
+        .stats-sub-names .name-tag { display: inline-block; background: rgba(212,122,138,0.08); padding: 1px 8px; border-radius: 12px; margin: 2px 3px; font-size: 0.65rem; }
+
+        /* 文档 */
+        .doc-container { flex: 1; overflow: hidden; margin-top: 10px; min-height: 0; display: flex; flex-direction: column; }
+        .doc-container .doc-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+        .doc-container .doc-list::-webkit-scrollbar { width: 4px; }
+        .doc-container .doc-list::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
+        .doc-item { background: white; border-radius: 14px; border: 1px solid rgba(235,210,200,0.3); padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+        .doc-item .doc-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .doc-item .doc-row .doc-link { color: #d47a8a; text-decoration: none; font-weight: 500; font-size: 0.85rem; word-break: break-all; }
+        .doc-item .doc-row .doc-link:hover { text-decoration: underline; }
+        .doc-item .doc-row .doc-note { flex: 1; font-size: 0.8rem; color: #5a3a3e; min-width: 100px; }
+        .doc-item .doc-row .doc-meta { font-size: 0.65rem; color: #b8a8a0; white-space: nowrap; }
+        .doc-item .doc-row .doc-del { background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.8rem; padding: 0 4px; }
+        .doc-item .doc-row .doc-del:hover { color: #d45a3a; }
+        .doc-add-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; flex-shrink: 0; }
+        .doc-add-row input, .doc-add-row textarea { padding: 8px 14px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.8rem; background: white; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; transition: border-color 0.2s; }
+        .doc-add-row input:focus, .doc-add-row textarea:focus { border-color: #d47a8a; }
+        .doc-add-row .doc-link-input { flex: 2; min-width: 150px; }
+        .doc-add-row .doc-note-input { flex: 3; min-width: 150px; border-radius: 20px; resize: vertical; }
+        .doc-add-row .doc-source-input { flex: 1; min-width: 80px; }
+        .doc-add-row .doc-add-btn { background: #d47a8a; border: none; color: white; padding: 8px 24px; border-radius: 30px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; white-space: nowrap; }
+        .doc-add-row .doc-add-btn:hover { background: #c06a7a; }
+
+        /* 学习链接 */
+        .links-container { flex: 1; overflow: hidden; margin-top: 10px; min-height: 0; display: flex; flex-direction: column; }
+        .links-container .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 12px; flex: 1; overflow-y: auto; align-content: start; padding-right: 4px; }
+        .links-container .links-grid::-webkit-scrollbar { width: 4px; }
+        .links-container .links-grid::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
+        .links-container .link-card { background: white; border-radius: 14px; border: 1px solid rgba(235,210,200,0.3); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; transition: all 0.2s; }
+        .links-container .link-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(212,122,138,0.08); }
+        .links-container .link-card .link-title { font-size: 0.85rem; font-weight: 600; color: #5a3a3e; }
+        .links-container .link-card .link-url { font-size: 0.7rem; color: #d47a8a; word-break: break-all; text-decoration: none; }
+        .links-container .link-card .link-url:hover { text-decoration: underline; }
+        .links-container .link-card .link-desc { font-size: 0.75rem; color: #8a7a7a; }
+        .links-container .link-card .link-del { align-self: flex-end; background: none; border: none; color: #d5c8c0; cursor: pointer; font-size: 0.7rem; padding: 0 4px; }
+        .links-container .link-card .link-del:hover { color: #d45a3a; }
+        .links-add-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; flex-shrink: 0; }
+        .links-add-row input { padding: 8px 14px; border: 1.5px solid #e8ddd0; border-radius: 30px; font-size: 0.8rem; background: white; outline: none; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; transition: border-color 0.2s; }
+        .links-add-row input:focus { border-color: #d47a8a; }
+        .links-add-row .link-name-input { flex: 1; min-width: 100px; }
+        .links-add-row .link-url-input { flex: 2; min-width: 150px; }
+        .links-add-row .link-desc-input { flex: 2; min-width: 120px; }
+        .links-add-row .links-add-btn { background: #d47a8a; border: none; color: white; padding: 8px 24px; border-radius: 30px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: 'Microsoft YaHei','PingFang SC',sans-serif; white-space: nowrap; }
+        .links-add-row .links-add-btn:hover { background: #c06a7a; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d5c8b8; border-radius: 10px; }
+
+        @media (max-width: 900px) {
+            .nav-sidebar { width: 70px; min-width: 70px; padding: 16px 0; }
+            .nav-btn { width: 56px; height: 56px; font-size: 0.7rem; }
+            .nav-btn .icon { font-size: 1.6rem; }
+            .nav-btn .label { font-size: 0.55rem; }
+            .nav-sidebar .logo { font-size: 1.4rem; }
+            .calendar-top { flex-direction: column; }
+            .calendar-panel { flex: 0 0 auto; max-height: 340px; }
+            .todo-panel { flex-direction: column; min-height: 300px; }
+            .todo-column { min-height: 200px; }
+            .position-container { flex-direction: column; overflow: auto; }
+            .position-left { flex: 0 0 auto; max-height: 300px; flex-direction: row; flex-wrap: wrap; padding: 10px 12px; }
+            .position-left .pos-list { flex: 1; max-height: 150px; flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+            .position-left .pos-item { padding: 4px 10px; font-size: 0.7rem; }
+            .position-center { min-height: 200px; }
+            .position-right { min-height: 150px; }
+            .stats-container { grid-template-columns: 1fr; }
+            .ledger-table-wrapper { font-size: 0.7rem; }
+            .ledger-table-wrapper th, .ledger-table-wrapper td { padding: 4px 2px; }
+            .ledger-table-wrapper td .editable-input, .ledger-table-wrapper td .editable-select { font-size: 0.7rem; min-height: 22px; }
+            .page-container { padding: 12px 14px 14px 14px; }
+            .ledger-header .left .greeting { font-size: 0.9rem; }
+            .ledger-header .left .kpi-text { font-size: 0.65rem; padding: 2px 10px; }
+            .add-row-btn, .export-excel-btn { font-size: 0.7rem; padding: 6px 14px; }
+            .doc-add-row { flex-direction: column; }
+            .doc-add-row input, .doc-add-row textarea { width: 100%; border-radius: 20px; }
+            .links-add-row { flex-direction: column; }
+            .links-add-row input { width: 100%; }
+            .links-container .links-grid { grid-template-columns: 1fr; }
+            .interview-count-control { font-size: 0.7rem; padding: 2px 10px; }
+        }
+        @media (max-width: 480px) {
+            .nav-sidebar { width: 56px; min-width: 56px; padding: 10px 0; }
+            .nav-btn { width: 44px; height: 44px; font-size: 0.55rem; }
+            .nav-btn .icon { font-size: 1.2rem; }
+            .nav-btn .label { font-size: 0.4rem; }
+            .nav-sidebar .logo { font-size: 1rem; }
+            .page-container { padding: 8px 10px 10px 10px; }
+            .page-header .title { font-size: 1rem; }
+            .ledger-table-wrapper table { min-width: 1000px; }
+            .stats-card { padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <nav class="nav-sidebar">
+        <div class="logo">🌸</div>
+        <button class="nav-btn active" data-page="page-ledger"><span class="icon">📋</span><span class="label">台账</span></button>
+        <button class="nav-btn" data-page="page-calendar"><span class="icon">📅</span><span class="label">日历</span></button>
+        <button class="nav-btn" data-page="page-position"><span class="icon">💼</span><span class="label">岗位</span></button>
+        <button class="nav-btn" data-page="page-stats"><span class="icon">📊</span><span class="label">数据</span></button>
+        <button class="nav-btn" data-page="page-docs"><span class="icon">📁</span><span class="label">文档</span></button>
+        <button class="nav-btn" data-page="page-links"><span class="icon">🔗</span><span class="label">学习</span></button>
+    </nav>
+
+    <div class="main-content">
+        <!-- 页面1：社招台账 -->
+        <div class="page-container active" id="page-ledger">
+            <div class="page-header"><div class="title">📋 社招台账</div></div>
+            <div class="ledger-container">
+                <div class="ledger-header">
+                    <div class="left">
+                        <div class="greeting" id="greetingText">🌸 你现在是HR实习生了，今天是你在 <span class="highlight" id="companyNameDisplay">公司</span> 工作的第 <span class="highlight" id="workDaysDisplay">0</span> 天！</div>
+                        <div class="kpi-text" id="kpiDisplay">📌 KPI：未设置</div>
+                    </div>
+                    <div class="ledger-actions">
+                        <div class="interview-count-control">
+                            <span>面试轮次</span>
+                            <button id="decInterviewCount">−</button>
+                            <span id="interviewCountDisplay">3</span>
+                            <button id="incInterviewCount">+</button>
+                        </div>
+                        <button class="export-excel-btn" id="exportExcelBtn">📤 备份台账</button>
+                        <button class="add-row-btn" id="addRowBtn">＋ 添加候选人</button>
+                    </div>
+                </div>
+                <div class="ledger-table-wrapper" id="ledgerTableWrapper">
+                    <table>
+                        <colgroup id="colgroup"></colgroup>
+                        <thead id="ledgerThead"><tr id="ledgerHeaderRow"></tr></thead>
+                        <tbody id="ledgerBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面2：日历 & 待办 -->
+        <div class="page-container" id="page-calendar">
+            <div class="page-header"><div class="title">📅 日历 & 待办</div></div>
+            <div class="calendar-todo-container">
+                <div class="calendar-top">
+                    <div class="calendar-panel">
+                        <div class="cal-header"><span class="cal-month" id="calMonth">2025年1月</span><div class="cal-nav"><button id="calPrev">‹</button><button id="calToday">今</button><button id="calNext">›</button></div></div>
+                        <div class="cal-grid" id="calGrid"></div>
+                        <div class="cal-legend"><span><span class="dot-legend"></span> 有面试</span><span>⬤ <span style="color:#d47a8a;font-weight:700;">今天</span></span></div>
+                        <div class="day-detail" id="dayDetail"><div class="detail-title">📌 选中日期安排</div><div id="dayDetailContent" style="font-size:0.8rem;color:#b0888a;">点击日期查看</div></div>
+                    </div>
+                    <div class="todo-panel">
+                        <div class="todo-column">
+                            <div class="todo-title"><span>📌 短期待办</span><span class="badge" id="shortTodoCount">0</span></div>
+                            <div class="todo-list" id="shortTodoList"></div>
+                            <div class="todo-add-row"><input type="text" id="shortTodoInput" placeholder="添加待办..." maxlength="100"><button id="shortTodoAdd">添加</button></div>
+                        </div>
+                        <div class="todo-column">
+                            <div class="todo-title"><span>📌 长期待办</span><span class="badge" id="longTodoCount">0</span></div>
+                            <div class="todo-list" id="longTodoList"></div>
+                            <div class="todo-add-row"><input type="text" id="longTodoInput" placeholder="添加待办..." maxlength="100"><button id="longTodoAdd">添加</button></div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;justify-content:center;padding:0 4px;flex-shrink:0;">
+                            <button class="trash-btn" id="openTrashBtn" style="font-size:1.2rem;padding:8px;">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="trash-modal" id="trashModal"><div class="modal-content"><h3>🗑️ 回收站</h3><div id="trashList"></div><button class="modal-close" id="closeTrashBtn">关闭</button></div></div>
+        </div>
+
+        <!-- 页面3：岗位管理 -->
+        <div class="page-container" id="page-position">
+            <div class="page-header"><div class="title">💼 岗位管理</div></div>
+            <div class="position-container">
+                <div class="position-left">
+                    <div class="pos-title">🏢 公司设置</div>
+                    <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;"><input class="pos-company-input" id="posCompanyInput" placeholder="公司名称" value="" style="flex:1;background:#faf5f2;" readonly><button class="pos-edit-btn" id="posCompanyEditBtn">✏️</button></div>
+                    <div class="pos-label">📅 入职时间</div>
+                    <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;"><input class="pos-date-input" id="posStartDateInput" type="date" value="" style="flex:1;background:#faf5f2;" readonly><button class="pos-edit-btn" id="posDateEditBtn">✏️</button></div>
+                    <div class="pos-label">🎯 KPI设置</div>
+                    <div style="display:flex;gap:4px;align-items:flex-start;flex-shrink:0;"><div class="pos-kpi-area" style="flex:1;"><textarea id="posKpiInput" placeholder="如：每周完成3人一面&#10;每月入职2人" readonly style="background:#faf5f2;"></textarea></div><button class="pos-edit-btn" id="posKpiEditBtn" style="margin-top:4px;">✏️</button></div>
+                    <div class="pos-title" style="margin-top:6px;">📂 岗位列表</div>
+                    <button class="pos-add-btn" id="posAddBtn">＋ 添加岗位</button>
+                    <div class="pos-list" id="posList"></div>
+                </div>
+                <div class="position-center">
+                    <div class="pos-editor-title"><span id="posEditorTitle">📄 岗位描述 (JD)</span><button class="pos-edit-btn" id="posEditBtn">✏️ 编辑</button></div>
+                    <div class="pos-editor-content"><textarea id="posJDEditor" placeholder="选择左侧岗位查看JD" readonly></textarea></div>
+                </div>
+                <div class="position-right">
+                    <div class="pos-tip-title"><span>💡 额外提示</span><button class="pos-edit-btn" id="posTipEditBtn">✏️ 编辑</button></div>
+                    <div class="pos-tip-content"><textarea id="posTipEditor" placeholder="业务偏好、碎碎念..." style="height:100%;" readonly></textarea></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面4：数据统计 -->
+        <div class="page-container" id="page-stats">
+            <div class="page-header"><div class="title">📊 数据统计</div></div>
+            <div class="stats-container">
+                <div class="stats-card"><div class="stats-label">📄 收到简历</div><div class="stats-row"><span>本周</span><span class="stat-num" id="statResumeWeek">0</span></div><div class="stats-row"><span>本月</span><span class="stat-num" id="statResumeMonth">0</span></div><div class="stats-row"><span>总数</span><span class="stat-num" id="statResumeTotal">0</span></div><div class="stats-sub-names" id="statResumeNames"></div></div>
+                <div class="stats-card"><div class="stats-label">📞 约面总数</div><div class="stats-row"><span>本周</span><span class="stat-num" id="statInterviewWeek">0</span></div><div class="stats-row"><span>本月</span><span class="stat-num" id="statInterviewMonth">0</span></div><div class="stats-row"><span>总数</span><span class="stat-num" id="statInterviewTotal">0</span></div><div class="stats-sub-names" id="statInterviewNames"></div></div>
+                <div class="stats-card"><div class="stats-label">✅ 一面通过率</div><div class="stats-row"><span>本月</span><span class="stat-num" id="statPassRateMonth">0%</span></div><div class="stats-row"><span>总数</span><span class="stat-num" id="statPassRateTotal">0%</span></div><div class="stats-sub-names" id="statPassNames"></div></div>
+                <div class="stats-card"><div class="stats-label">🎉 入职数量</div><div class="stats-row"><span>本月</span><span class="stat-num" id="statOfferMonth">0</span></div><div class="stats-row"><span>总数</span><span class="stat-num" id="statOfferTotal">0</span></div><div class="stats-sub-names" id="statOfferNames"></div></div>
+            </div>
+        </div>
+
+        <!-- 页面5：文档管理 -->
+        <div class="page-container" id="page-docs">
+            <div class="page-header"><div class="title">📁 工作文档</div></div>
+            <div class="doc-container">
+                <div class="doc-list" id="docList"></div>
+                <div class="doc-add-row">
+                    <input class="doc-link-input" id="docLinkInput" placeholder="🔗 文档链接">
+                    <textarea class="doc-note-input" id="docNoteInput" placeholder="📝 备注/碎碎念" rows="1"></textarea>
+                    <input class="doc-source-input" id="docSourceInput" placeholder="📎 来源">
+                    <button class="doc-add-btn" id="docAddBtn">＋ 添加</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面6：学习链接 -->
+        <div class="page-container" id="page-links">
+            <div class="page-header"><div class="title">🔗 HR学习资源</div></div>
+            <div class="links-container">
+                <div class="links-grid" id="linksGrid"></div>
+                <div class="links-add-row">
+                    <input class="link-name-input" id="linkNameInput" placeholder="📌 名称">
+                    <input class="link-url-input" id="linkUrlInput" placeholder="🔗 网址">
+                    <input class="link-desc-input" id="linkDescInput" placeholder="📝 备注">
+                    <button class="links-add-btn" id="linksAddBtn">＋ 添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    //  数据管理
+    // ============================================================
+    const STORAGE_KEY = 'hr_assistant_data';
+    let data = {
+        ledger: [], shortTodos: [], longTodos: [], trashTodos: [],
+        positions: [], companyName: '', startDate: '', kpiText: '',
+        selectedPositionId: null, docs: [], studyLinks: [], 
+        interviewCount: 3, _idCounter: 1000
+    };
+
+    function loadData() {
+        try { 
+            const saved = localStorage.getItem(STORAGE_KEY); 
+            if (saved) { 
+                const parsed = JSON.parse(saved); 
+                data = parsed; 
+                if (!data.ledger) data.ledger = []; 
+                if (!data.shortTodos) data.shortTodos = []; 
+                if (!data.longTodos) data.longTodos = []; 
+                if (!data.trashTodos) data.trashTodos = []; 
+                if (!data.positions) data.positions = []; 
+                if (!data.docs) data.docs = []; 
+                if (!data.studyLinks) data.studyLinks = []; 
+                if (!data._idCounter) data._idCounter = 1000; 
+                if (!data.interviewCount) data.interviewCount = 3; 
+                return true; 
+            } 
+        } catch(e) {} 
+        return false; 
+    }
+    function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
+    function genId() { return ++data._idCounter; }
+    
+    if (!loadData()) {
+        data.companyName = '未命名公司';
+        data.startDate = '';
+        data.kpiText = '';
+        data.ledger = [];
+        data.shortTodos = [];
+        data.longTodos = [];
+        data.trashTodos = [];
+        data.positions = [];
+        data.docs = [];
+        data.studyLinks = [];
+        data.interviewCount = 3;
+        data._idCounter = 1000;
+        saveData();
+    }
+
+    // 预设学习链接
+    const presetLinks = [
+        { name: 'VLOOKUP 函数教程', url: 'https://www.cnblogs.com/yxysuanfa/p/19209616', desc: 'HR必学vlookup函数' },
+        { name: 'HR 常用公式合集', url: 'https://blog.csdn.net/amsonga/article/details/107709963', desc: 'Excel 教程' },
+        { name: '全国985/211高校名单', url: 'https://www.jijie.ink/tool/university-query', desc: '教育部官方名单' },
+        { name: 'QS世界大学排名', url: 'https://xuanxiao.org/rankings/qs/world-university-rankings', desc: 'QS最新排名' },
+        { name: '清华大学就业办', url: 'https://career.tsinghua.edu.cn/info/1018/4798.html', desc: 'C9就业办' },
+        { name: '北京大学就业办', url: 'https://scc.pku.edu.cn/', desc: 'C9就业办' },
+        { name: '复旦大学就业办', url: 'https://career.fudan.edu.cn/News/zdydetail.html?cateid=738544fb-5c14-527d-4bfc-868e7670bc20&id=35cd4caf-bf01-dc8d-580f-80d3bfa083ac', desc: 'C9就业办' },
+        { name: '上海交通大学就业办', url: 'https://www.job.sjtu.edu.cn/career/news/view/lxzpzn/102844702012870656', desc: 'C9就业办' },
+        { name: '浙江大学就业办', url: 'https://www.career.zju.edu.cn/contacts?lmid=739BEBB729FF2B25E0538713470A6C41', desc: 'C9就业办' },
+        { name: '中国科学技术大学就业办', url: 'https://www.job.ustc.edu.cn/CollegeEmployment/index.aspx', desc: 'C9就业办' },
+        { name: '南京大学就业办', url: 'https://jw.nju.edu.cn/c9/c4/c24683a510404/page.html', desc: 'C9就业办' },
+        { name: '西安交通大学就业办', url: 'https://job.xjtu.edu.cn/frontpage/xjtu/html/newsDetail.html?id=f0c28d95cc0b40649c1ed8a8db3260b8', desc: 'C9就业办' },
+        { name: '哈尔滨工业大学就业办', url: 'https://career.hit.edu.cn/zhxy-xszyfzpt/lxfs', desc: 'C9就业办' }
+
+    ];
+    const existingNames = data.studyLinks.map(l => l.name);
+    presetLinks.forEach(p => {
+        if (!existingNames.includes(p.name)) {
+            data.studyLinks.push({ id: genId(), name: p.name, url: p.url, desc: p.desc });
+        }
+    });
+    saveData();
+
+    // ============================================================
+    //  工具函数
+    // ============================================================
+    function formatDate(d) { if (!d) return ''; const dt = new Date(d); if (isNaN(dt)) return d; return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+    function formatDateDisplay(d) { if (!d) return ''; const dt = new Date(d); if (isNaN(dt)) return d; return dt.getFullYear() + '/' + String(dt.getMonth() + 1).padStart(2, '0') + '/' + String(dt.getDate()).padStart(2, '0'); }
+    function getToday() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function getMonthStart() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01'; }
+    function getWeekStart() { const d = new Date(); const day = d.getDay() || 7; d.setDate(d.getDate() - day + 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function getChineseHoliday(year, month, day) {
+        const md = month + '-' + day;
+        const map = { '1-1':'元旦','2-14':'情人节','3-8':'妇女节','4-1':'愚人节','5-1':'劳动节','6-1':'儿童节','10-1':'国庆节','12-25':'圣诞节' };
+        const jq = { '2-4':'立春','3-5':'惊蛰','4-5':'清明','5-5':'立夏','6-6':'芒种','7-7':'小暑','8-7':'立秋','9-7':'白露','10-8':'寒露','11-7':'立冬','12-7':'大雪' };
+        return map[md] || jq[md] || '';
+    }
+
+    // ============================================================
+    //  页面切换
+    // ============================================================
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const pageId = this.dataset.page;
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            renderAll();
+        });
+    });
+
+    // ============================================================
+    //  ★★★ 核心：判断是否整行变灰 ★★★
+    // ============================================================
+    function isRowFailed(row, count) {
+        if (row.resumeStatus === '不通过') return true;
+        for (let i = 1; i <= count; i++) {
+            if (row[`interview${i}Result`] === '未通过') return true;
+        }
+        if (row.finalStatus === '否') return true;
+        return false;
+    }
+
+    // ============================================================
+    //  ★★★ 核心：判断某一列是否显示（流程控制）★★★
+    // ============================================================
+    function shouldShowColumn(row, colKey, count) {
+        if (['name', 'position', 'resumeDate', 'resumeStatus', 'remark', 'delete'].includes(colKey)) {
+            return true;
+        }
+        if (colKey === 'phone') {
+            return row.resumeStatus === '通过';
+        }
+        const match = colKey.match(/interview(\d+)(Time|Result)/);
+        if (match) {
+            const idx = parseInt(match[1]);
+            if (row.resumeStatus !== '通过') return false;
+            if (row.phoneNote !== '是') return false;
+            if (idx === 1) return true;
+            for (let i = 1; i < idx; i++) {
+                if (row[`interview${i}Result`] !== '通过') return false;
+            }
+            return true;
+        }
+        if (colKey === 'final') {
+            if (row.resumeStatus !== '通过') return false;
+            if (row.phoneNote !== '是') return false;
+            for (let i = 1; i <= count; i++) {
+                if (row[`interview${i}Result`] !== '通过') return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    // ============================================================
+    //  渲染：社招台账
+    // ============================================================
+    function renderLedger() {
+        const thead = document.getElementById('ledgerHeaderRow');
+        const tbody = document.getElementById('ledgerBody');
+        const colgroup = document.getElementById('colgroup');
+        const count = data.interviewCount || 3;
+        document.getElementById('interviewCountDisplay').textContent = count;
+
+        // 生成表头（删掉基本信息列）
+        let headerHtml = `
+            <th class="col-seq">序号</th>
+            <th class="col-name">姓名</th>
+            <th class="col-position">投递岗位</th>
+            <th class="col-resume-date">简历时间</th>
+            <th class="col-resume-status">简历通过</th>
+            <th class="col-phone">电话约面</th>`;
+        for (let i = 1; i <= count; i++) {
+            headerHtml += `<th class="col-interview-time">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间</th>
+                           <th class="col-interview-result">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果</th>`;
+        }
+        headerHtml += `<th class="col-final">审批/入职</th><th class="col-remark">备注</th><th class="col-delete"></th>`;
+        thead.innerHTML = headerHtml;
+
+        // colgroup（删掉基本信息列）
+        let colHtml = `<col class="col-seq"><col class="col-name"><col class="col-position"><col class="col-resume-date"><col class="col-resume-status"><col class="col-phone">`;
+        for (let i = 1; i <= count; i++) {
+            colHtml += `<col class="col-interview-time"><col class="col-interview-result">`;
+        }
+        colHtml += `<col class="col-final"><col class="col-remark"><col class="col-delete">`;
+        colgroup.innerHTML = colHtml;
+
+        const sorted = [...data.ledger].sort((a, b) => b.id - a.id);
+        if (sorted.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${count*2+8}"><div class="ledger-empty">🌸 暂无候选人，点击右上角「添加候选人」开始</div></td></tr>`;
+            return;
+        }
+
+        // 构建每一行
+        let rowsHtml = '';
+        sorted.forEach((row, idx) => {
+            const realIdx = data.ledger.length - idx;
+            const positionOptions = data.positions.map(p => `<option value="${p.name}" ${row.position === p.name ? 'selected' : ''}>${p.name}</option>`).join('');
+            const failed = isRowFailed(row, count);
+
+            let rowHtml = `<tr class="${failed ? 'row-failed' : ''}">`;
+            
+            // 序号
+            rowHtml += `<td class="col-seq">${realIdx}</td>`;
+
+            // 姓名
+            rowHtml += `<td class="col-name"><input class="editable-input name-input" type="text" value="${row.name || ''}" data-field="name" data-id="${row.id}" placeholder="姓名"></td>`;
+
+            // 投递岗位
+            rowHtml += `<td class="col-position"><select class="editable-select" data-field="position" data-id="${row.id}"><option value="">请选择</option>${positionOptions}</select></td>`;
+
+            // 简历时间
+            rowHtml += `<td class="col-resume-date"><input class="editable-input" type="date" value="${row.resumeDate || ''}" data-field="resumeDate" data-id="${row.id}"></td>`;
+
+            // 简历通过
+            rowHtml += `<td class="col-resume-status"><select class="editable-select" data-field="resumeStatus" data-id="${row.id}"><option value="">待MT审核</option><option value="通过" ${row.resumeStatus === '通过' ? 'selected' : ''}>通过</option><option value="不通过" ${row.resumeStatus === '不通过' ? 'selected' : ''}>不通过</option></select></td>`;
+
+            // 电话约面（下拉框）
+            const showPhone = shouldShowColumn(row, 'phone', count);
+            rowHtml += `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}"><option value="">请选择</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
+
+            // 面试列（时间用datetime-local，结果用下拉框，结果分两行显示）
+            for (let i = 1; i <= count; i++) {
+                const timeField = `interview${i}Time`;
+                const resultField = `interview${i}Result`;
+                const showTime = shouldShowColumn(row, timeField, count);
+                const showResult = shouldShowColumn(row, resultField, count);
+                
+                const timeVal = row[timeField] || '';
+                const resultVal = row[resultField] || '';
+                const resultOptions = `<option value="">待业务<br>出结果</option><option value="通过" ${resultVal === '通过' ? 'selected' : ''}>通过</option><option value="未通过" ${resultVal === '未通过' ? 'selected' : ''}>未通过</option>`;
+                
+                rowHtml += `<td class="col-interview-time ${showTime ? '' : 'hidden-cell'}"><div class="interview-time-cell"><input class="time-input" type="datetime-local" value="${timeVal}" data-field="${timeField}" data-id="${row.id}"></div></td>`;
+                rowHtml += `<td class="col-interview-result ${showResult ? '' : 'hidden-cell'}"><select class="editable-select result-select" data-field="${resultField}" data-id="${row.id}">${resultOptions}</select></td>`;
+            }
+
+            // 审批/入职
+            const showFinal = shouldShowColumn(row, 'final', count);
+            rowHtml += `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}"><option value="">未入职</option><option value="是" ${row.finalStatus === '是' ? 'selected' : ''}>是</option><option value="否" ${row.finalStatus === '否' ? 'selected' : ''}>否</option></select></td>`;
+
+            // 备注
+            rowHtml += `<td class="col-remark"><input class="editable-input" type="text" value="${row.remark || ''}" data-field="remark" data-id="${row.id}"></td>`;
+
+            // 删除按钮（固定在备注右侧）
+            rowHtml += `<td class="col-delete"><button class="row-delete-btn" data-id="${row.id}">✕</button></td>`;
+
+            rowHtml += `</tr>`;
+            rowsHtml += rowHtml;
+        });
+
+        tbody.innerHTML = rowsHtml;
+
+        // ===== 事件绑定 =====
+        tbody.querySelectorAll('.editable-input, .editable-select, .time-input').forEach(el => {
+            el.addEventListener('change', function() {
+                const id = parseInt(this.dataset.id);
+                const field = this.dataset.field;
+                const val = this.value;
+                const row = data.ledger.find(r => r.id === id);
+                if (!row) return;
+
+                if (field === 'resumeStatus' && (val === '不通过' || val === '')) {
+                    row.phoneNote = '';
+                    for (let i = 1; i <= 10; i++) {
+                        row[`interview${i}Time`] = '';
+                        row[`interview${i}Result`] = '';
+                    }
+                    row.finalStatus = '';
+                }
+                if (field === 'phoneNote' && val !== '是') {
+                    for (let i = 1; i <= 10; i++) {
+                        row[`interview${i}Time`] = '';
+                        row[`interview${i}Result`] = '';
+                    }
+                    row.finalStatus = '';
+                }
+                const match = field.match(/interview(\d+)Result/);
+                if (match) {
+                    const idx = parseInt(match[1]);
+                    if (val !== '通过') {
+                        for (let i = idx + 1; i <= 10; i++) {
+                            row[`interview${i}Time`] = '';
+                            row[`interview${i}Result`] = '';
+                        }
+                        row.finalStatus = '';
+                    }
+                }
+
+                row[field] = val;
+                saveData();
+                renderAll();
+            });
+        });
+
+        // 删除按钮
+        tbody.querySelectorAll('.row-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                if (confirm('确定删除该候选人吗？')) {
+                    data.ledger = data.ledger.filter(r => r.id !== id);
+                    saveData();
+                    renderAll();
+                }
+            });
+        });
+
+        // 更新顶部信息
+        document.getElementById('companyNameDisplay').textContent = data.companyName || '公司';
+        const startDate = data.startDate;
+        if (startDate) {
+            const start = new Date(startDate);
+            const now = new Date();
+            const days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('workDaysDisplay').textContent = days >= 0 ? days : 0;
+        } else {
+            document.getElementById('workDaysDisplay').textContent = '?';
+        }
+        document.getElementById('kpiDisplay').textContent = '📌 KPI：' + (data.kpiText || '未设置');
+
+        checkDuplicates();
+    }
+
+    function checkDuplicates() {
+        const groups = {};
+        data.ledger.forEach(row => {
+            const key = (row.name || '') + '|' + (row.position || '');
+            if (key && row.name && row.position) {
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(row);
+            }
+        });
+        for (const key in groups) {
+            if (groups[key].length > 1) {
+                const [name, position] = key.split('|');
+                if (confirm(`⚠️ 发现重复候选人：\n姓名：${name}\n岗位：${position}\n共 ${groups[key].length} 条记录\n\n点击"确定"合并，点击"取消"手动处理`)) {
+                    const keep = groups[key][0];
+                    const toRemove = groups[key].slice(1);
+                    toRemove.forEach(r => { data.ledger = data.ledger.filter(item => item.id !== r.id); });
+                    const allInfos = groups[key].map(r => r.basicInfo).filter(Boolean);
+                    if (allInfos.length > 1 && !keep.basicInfo) keep.basicInfo = allInfos.join('；');
+                    saveData();
+                    renderAll();
+                    return;
+                } else {
+                    const newName = prompt(`请为这位候选人重命名（当前名称：${name}）\n提示：可以添加学校或编号区分`, name + '(1)');
+                    if (newName && newName !== name) {
+                        groups[key].forEach(r => { r.name = newName; });
+                        saveData();
+                        renderAll();
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    // 面试轮次增减
+    document.getElementById('incInterviewCount').addEventListener('click', function() {
+        if (data.interviewCount < 10) { data.interviewCount++; saveData(); renderAll(); }
+    });
+    document.getElementById('decInterviewCount').addEventListener('click', function() {
+        if (data.interviewCount > 1) { data.interviewCount--; saveData(); renderAll(); }
+    });
+
+    // 导出
+    document.getElementById('exportExcelBtn').addEventListener('click', function() {
+        if (data.ledger.length === 0) { alert('暂无数据可导出'); return; }
+        const count = data.interviewCount || 3;
+        let header = '序号,姓名,投递岗位,简历时间,简历通过,电话约面';
+        for (let i = 1; i <= count; i++) {
+            header += `,${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间,${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果`;
+        }
+        header += ',审批/入职,备注';
+        let csv = '\uFEFF' + header + '\n';
+        data.ledger.forEach((r, idx) => {
+            let line = `${idx+1},${r.name||''},${r.position||''},${r.resumeDate||''},${r.resumeStatus||''},${r.phoneNote||''}`;
+            for (let i = 1; i <= count; i++) {
+                line += `,${r[`interview${i}Time`]||''},${r[`interview${i}Result`]||''}`;
+            }
+            line += `,${r.finalStatus||''},${r.remark||''}`;
+            csv += line + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `社招台账_${getToday()}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+
+    // 添加候选人
+    document.getElementById('addRowBtn').addEventListener('click', function() {
+        const newRow = {
+            id: genId(), name: '', position: '', resumeDate: getToday(),
+            resumeStatus: '', phoneNote: '', finalStatus: '', remark: ''
+        };
+        for (let i = 1; i <= 10; i++) {
+            newRow[`interview${i}Time`] = '';
+            newRow[`interview${i}Result`] = '';
+        }
+        data.ledger.push(newRow);
+        saveData();
+        renderAll();
+    });
+
+    // ============================================================
+    //  渲染：日历
+    // ============================================================
+    let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+    let selectedDate = getToday();
+
+    function renderCalendar() {
+        const grid = document.getElementById('calGrid');
+        document.getElementById('calMonth').textContent = calYear + '年' + (calMonth + 1) + '月';
+        const firstDay = new Date(calYear, calMonth, 1).getDay();
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+        const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate();
+        const today = getToday();
+        const interviewDates = new Set();
+        data.ledger.forEach(row => {
+            for (let i = 1; i <= 10; i++) {
+                if (row[`interview${i}Time`]) {
+                    const d = row[`interview${i}Time`].substring(0, 10);
+                    if (d) interviewDates.add(d);
+                }
+            }
+        });
+
+        let html = '';
+        const weekdays = ['日','一','二','三','四','五','六'];
+        weekdays.forEach((w, i) => { html += `<div class="cal-weekday ${i===0||i===6?'weekend':''}">${w}</div>`; });
+        const startOffset = firstDay;
+        for (let i = startOffset - 1; i >= 0; i--) { const d = daysInPrevMonth - i; html += `<div class="cal-day other-month">${d}</div>`; }
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            const isToday = dateStr === today;
+            const hasEvent = interviewDates.has(dateStr);
+            const dow = new Date(calYear, calMonth, d).getDay();
+            const isWeekend = (dow === 0 || dow === 6);
+            const holiday = getChineseHoliday(calYear, calMonth + 1, d);
+            const isSelected = dateStr === selectedDate;
+            let classes = 'cal-day' + (isWeekend ? ' weekend-day' : '') + (isToday ? ' today' : '') + (hasEvent ? ' has-event' : '') + (isSelected ? ' selected' : '');
+            const subLabel = holiday ? `<div class="sub-label">${holiday}</div>` : '';
+            html += `<div class="${classes}" data-date="${dateStr}">${d}${subLabel}${hasEvent ? '<div class="dot"></div>' : ''}</div>`;
+        }
+        const totalDays = startOffset + daysInMonth;
+        const remaining = (7 - totalDays % 7) % 7;
+        for (let d = 1; d <= remaining; d++) { html += `<div class="cal-day other-month">${d}</div>`; }
+        grid.innerHTML = html;
+
+        grid.querySelectorAll('.cal-day[data-date]').forEach(el => {
+            el.addEventListener('click', function() {
+                selectedDate = this.dataset.date;
+                renderCalendar();
+                showDayDetail(selectedDate);
+            });
+        });
+        showDayDetail(selectedDate);
+    }
+
+    function showDayDetail(dateStr) {
+        const container = document.getElementById('dayDetailContent');
+        if (!dateStr) { container.innerHTML = '点击日期查看'; return; }
+        const events = [];
+        data.ledger.forEach(row => {
+            for (let i = 1; i <= 10; i++) {
+                const time = row[`interview${i}Time`];
+                if (time && time.substring(0, 10) === dateStr) {
+                    const level = ['一','二','三','四','五','六','七','八','九','十'][i-1];
+                    const timeDisplay = time.substring(11, 16) || '';
+                    events.push(`${row.name || '未命名'} · ${level}面 ${timeDisplay}${row[`interview${i}Result`] ? ' ('+row[`interview${i}Result`]+')' : ''}`);
+                }
+            }
+        });
+        if (events.length === 0) {
+            container.innerHTML = `<div style="color:#b0888a;font-size:0.8rem;">📭 这一天没有安排</div>`;
+        } else {
+            container.innerHTML = events.map(e => `<div class="detail-item">📌 ${e}</div>`).join('');
+        }
+    }
+
+    document.getElementById('calPrev').addEventListener('click', function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+    document.getElementById('calNext').addEventListener('click', function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+    document.getElementById('calToday').addEventListener('click', function() { const now = new Date(); calYear = now.getFullYear(); calMonth = now.getMonth(); selectedDate = getToday(); renderCalendar(); });
+
+    // ============================================================
+    //  待办 & 回收站
+    // ============================================================
+    function renderTodos() {
+        const shortList = document.getElementById('shortTodoList');
+        const shortTodos = data.shortTodos.filter(t => !t.done);
+        document.getElementById('shortTodoCount').textContent = shortTodos.length;
+        if (shortTodos.length === 0) shortList.innerHTML = '<div style="color:#c9b8b0;font-size:0.75rem;text-align:center;padding:20px 0;">✨ 暂无短期待办</div>';
+        else shortList.innerHTML = shortTodos.map(t => `<div class="todo-item"><div class="todo-check" data-id="${t.id}" data-type="short"></div><div class="todo-text">${t.text}</div><button class="todo-del" data-id="${t.id}" data-type="short">✕</button></div>`).join('');
+
+        const longList = document.getElementById('longTodoList');
+        const longTodos = data.longTodos.filter(t => !t.done);
+        document.getElementById('longTodoCount').textContent = longTodos.length;
+        if (longTodos.length === 0) longList.innerHTML = '<div style="color:#c9b8b0;font-size:0.75rem;text-align:center;padding:20px 0;">✨ 暂无长期待办</div>';
+        else longList.innerHTML = longTodos.map(t => `<div class="todo-item"><div class="todo-check" data-id="${t.id}" data-type="long"></div><div class="todo-text">${t.text}</div><button class="todo-del" data-id="${t.id}" data-type="long">✕</button></div>`).join('');
+
+        document.querySelectorAll('.todo-check').forEach(el => {
+            el.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id); const type = this.dataset.type;
+                const list = type === 'short' ? data.shortTodos : data.longTodos;
+                const todo = list.find(t => t.id === id);
+                if (todo) { todo.done = true; todo.doneTime = new Date().toISOString(); data.trashTodos.push({ id: todo.id, text: todo.text, doneTime: todo.doneTime, source: type === 'short' ? '短期待办' : '长期待办' }); list.splice(list.indexOf(todo), 1); saveData(); renderTodos(); }
+            });
+        });
+        document.querySelectorAll('.todo-del').forEach(el => {
+            el.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id); const type = this.dataset.type;
+                const list = type === 'short' ? data.shortTodos : data.longTodos;
+                const idx = list.findIndex(t => t.id === id); if (idx > -1) { list.splice(idx, 1); saveData(); renderTodos(); }
+            });
+        });
+        renderTrash();
+    }
+
+    function renderTrash() {
+        const list = document.getElementById('trashList');
+        if (data.trashTodos.length === 0) list.innerHTML = '<div style="color:#c9b8b0;font-size:0.8rem;text-align:center;padding:20px 0;">🗑️ 回收站为空</div>';
+        else list.innerHTML = data.trashTodos.map(t => `<div class="trash-item"><span>${t.text} <span style="color:#b8a8a0;font-size:0.6rem;">(${formatDateDisplay(t.doneTime)})</span></span><button class="trash-restore" data-id="${t.id}">↩️ 恢复</button></div>`).join('');
+        document.querySelectorAll('.trash-restore').forEach(el => {
+            el.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                const idx = data.trashTodos.findIndex(t => t.id === id);
+                if (idx > -1) {
+                    const todo = data.trashTodos[idx];
+                    const targetList = todo.source === '长期待办' ? data.longTodos : data.shortTodos;
+                    targetList.push({ id: todo.id, text: todo.text, done: false, doneTime: null });
+                    data.trashTodos.splice(idx, 1);
+                    saveData(); renderTodos();
+                }
+            });
+        });
+    }
+
+    document.getElementById('shortTodoAdd').addEventListener('click', function() { const input = document.getElementById('shortTodoInput'); const text = input.value.trim(); if (!text) return; data.shortTodos.push({ id: genId(), text, done: false, doneTime: null }); input.value = ''; saveData(); renderTodos(); });
+    document.getElementById('longTodoAdd').addEventListener('click', function() { const input = document.getElementById('longTodoInput'); const text = input.value.trim(); if (!text) return; data.longTodos.push({ id: genId(), text, done: false, doneTime: null }); input.value = ''; saveData(); renderTodos(); });
+    document.getElementById('shortTodoInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('shortTodoAdd').click(); });
+    document.getElementById('longTodoInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('longTodoAdd').click(); });
+    document.getElementById('openTrashBtn').addEventListener('click', function() { document.getElementById('trashModal').style.display = 'flex'; renderTrash(); });
+    document.getElementById('closeTrashBtn').addEventListener('click', function() { document.getElementById('trashModal').style.display = 'none'; });
+    document.getElementById('trashModal').addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
+
+    // ============================================================
+    //  岗位管理
+    // ============================================================
+    function renderPositions() {
+        const list = document.getElementById('posList');
+        if (data.positions.length === 0) list.innerHTML = '<div style="color:#c9b8b0;font-size:0.75rem;text-align:center;padding:12px 0;">暂无岗位</div>';
+        else list.innerHTML = data.positions.map(p => `<button class="pos-item ${data.selectedPositionId === p.id ? 'active' : ''}" data-id="${p.id}">${p.name}<button class="pos-del" data-id="${p.id}">✕</button></button>`).join('');
+        list.querySelectorAll('.pos-item').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (e.target.classList.contains('pos-del')) return;
+                const id = parseInt(this.dataset.id);
+                data.selectedPositionId = id;
+                saveData(); renderPositions(); loadPositionData(id);
+            });
+        });
+        list.querySelectorAll('.pos-del').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = parseInt(this.dataset.id);
+                if (confirm('确定删除该岗位吗？')) {
+                    data.positions = data.positions.filter(p => p.id !== id);
+                    if (data.selectedPositionId === id) data.selectedPositionId = null;
+                    saveData(); renderPositions(); loadPositionData(null);
+                }
+            });
+        });
+        document.getElementById('posCompanyInput').value = data.companyName || '';
+        document.getElementById('posStartDateInput').value = data.startDate || '';
+        document.getElementById('posKpiInput').value = data.kpiText || '';
+        if (data.selectedPositionId) {
+            const pos = data.positions.find(p => p.id === data.selectedPositionId);
+            if (pos) loadPositionData(pos.id);
+            else { data.selectedPositionId = null; loadPositionData(null); }
+        } else { loadPositionData(null); }
+    }
+
+    function loadPositionData(id) {
+        const jdEditor = document.getElementById('posJDEditor');
+        const tipEditor = document.getElementById('posTipEditor');
+        const title = document.getElementById('posEditorTitle');
+        if (!id) {
+            title.textContent = '📄 岗位描述 (JD)';
+            jdEditor.value = '请从左侧选择一个岗位';
+            jdEditor.readOnly = true;
+            tipEditor.value = '';
+            tipEditor.readOnly = true;
+            document.getElementById('posEditBtn').classList.remove('editing');
+            document.getElementById('posTipEditBtn').classList.remove('editing');
+            return;
+        }
+        const pos = data.positions.find(p => p.id === id);
+        if (!pos) return;
+        title.textContent = '📄 ' + pos.name + ' - 岗位描述 (JD)';
+        jdEditor.value = pos.jd || '';
+        jdEditor.readOnly = true;
+        tipEditor.value = pos.tip || '';
+        tipEditor.readOnly = true;
+        document.getElementById('posEditBtn').classList.remove('editing');
+        document.getElementById('posTipEditBtn').classList.remove('editing');
+    }
+
+    let isEditingJD = false;
+    document.getElementById('posEditBtn').addEventListener('click', function() {
+        const id = data.selectedPositionId;
+        if (!id) { alert('请先从左侧选择一个岗位'); return; }
+        const pos = data.positions.find(p => p.id === id);
+        if (!pos) return;
+        const jdEditor = document.getElementById('posJDEditor');
+        if (isEditingJD) {
+            pos.jd = jdEditor.value;
+            jdEditor.readOnly = true;
+            isEditingJD = false;
+            this.textContent = '✏️ 编辑';
+            this.classList.remove('editing');
+            saveData(); renderPositions();
+        } else {
+            jdEditor.readOnly = false;
+            jdEditor.focus();
+            isEditingJD = true;
+            this.textContent = '💾 保存';
+            this.classList.add('editing');
+        }
+    });
+
+    let isEditingTip = false;
+    document.getElementById('posTipEditBtn').addEventListener('click', function() {
+        const id = data.selectedPositionId;
+        if (!id) { alert('请先从左侧选择一个岗位'); return; }
+        const pos = data.positions.find(p => p.id === id);
+        if (!pos) return;
+        const tipEditor = document.getElementById('posTipEditor');
+        if (isEditingTip) {
+            pos.tip = tipEditor.value;
+            tipEditor.readOnly = true;
+            isEditingTip = false;
+            this.textContent = '✏️ 编辑';
+            this.classList.remove('editing');
+            saveData();
+        } else {
+            tipEditor.readOnly = false;
+            tipEditor.focus();
+            isEditingTip = true;
+            this.textContent = '💾 保存';
+            this.classList.add('editing');
+        }
+    });
+
+    function makeEditToggle(inputId, btnId, dataField) {
+        let editing = false;
+        document.getElementById(btnId).addEventListener('click', function() {
+            const input = document.getElementById(inputId);
+            if (editing) {
+                data[dataField] = input.value;
+                input.readOnly = true;
+                input.style.background = '#faf5f2';
+                editing = false;
+                this.textContent = '✏️';
+                this.classList.remove('editing');
+                saveData();
+                renderAll();
+            } else {
+                input.readOnly = false;
+                input.style.background = 'white';
+                input.focus();
+                editing = true;
+                this.textContent = '💾';
+                this.classList.add('editing');
+            }
+        });
+    }
+    makeEditToggle('posCompanyInput', 'posCompanyEditBtn', 'companyName');
+    makeEditToggle('posStartDateInput', 'posDateEditBtn', 'startDate');
+    let kpiEditing = false;
+    document.getElementById('posKpiEditBtn').addEventListener('click', function() {
+        const input = document.getElementById('posKpiInput');
+        if (kpiEditing) {
+            data.kpiText = input.value;
+            input.readOnly = true;
+            input.style.background = '#faf5f2';
+            kpiEditing = false;
+            this.textContent = '✏️';
+            this.classList.remove('editing');
+            saveData(); renderAll();
+        } else {
+            input.readOnly = false;
+            input.style.background = 'white';
+            input.focus();
+            kpiEditing = true;
+            this.textContent = '💾';
+            this.classList.add('editing');
+        }
+    });
+
+    document.getElementById('posAddBtn').addEventListener('click', function() {
+        const name = prompt('请输入岗位名称：');
+        if (!name || !name.trim()) return;
+        if (data.positions.some(p => p.name === name.trim())) { alert('该岗位已存在！'); return; }
+        data.positions.push({ id: genId(), name: name.trim(), jd: '', tip: '' });
+        data.selectedPositionId = data.positions[data.positions.length - 1].id;
+        saveData(); renderPositions(); loadPositionData(data.selectedPositionId);
+    });
+
+    // ============================================================
+    //  数据统计
+    // ============================================================
+    function renderStats() {
+        const weekStart = getWeekStart();
+        const monthStart = getMonthStart();
+
+        const resumeTotal = data.ledger.length;
+        const resumeWeek = data.ledger.filter(r => r.resumeDate && r.resumeDate >= weekStart).length;
+        const resumeMonth = data.ledger.filter(r => r.resumeDate && r.resumeDate >= monthStart).length;
+        document.getElementById('statResumeTotal').textContent = resumeTotal;
+        document.getElementById('statResumeWeek').textContent = resumeWeek;
+        document.getElementById('statResumeMonth').textContent = resumeMonth;
+        document.getElementById('statResumeNames').innerHTML = data.ledger.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
+
+        const count = data.interviewCount || 3;
+        const interviewRows = data.ledger.filter(r => {
+            for (let i = 1; i <= count; i++) { if (r[`interview${i}Time`]) return true; }
+            return false;
+        });
+        const interviewTotal = interviewRows.length;
+        const interviewWeek = interviewRows.filter(r => {
+            for (let i = 1; i <= count; i++) { if (r[`interview${i}Time`] && r[`interview${i}Time`].substring(0,10) >= weekStart) return true; }
+            return false;
+        }).length;
+        const interviewMonth = interviewRows.filter(r => {
+            for (let i = 1; i <= count; i++) { if (r[`interview${i}Time`] && r[`interview${i}Time`].substring(0,10) >= monthStart) return true; }
+            return false;
+        }).length;
+        document.getElementById('statInterviewTotal').textContent = interviewTotal;
+        document.getElementById('statInterviewWeek').textContent = interviewWeek;
+        document.getElementById('statInterviewMonth').textContent = interviewMonth;
+        document.getElementById('statInterviewNames').innerHTML = interviewRows.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
+
+        let passTotal = 0, totalPass = 0, passMonth = 0, totalPassMonth = 0;
+        data.ledger.forEach(r => {
+            for (let i = 1; i <= count; i++) {
+                const time = r[`interview${i}Time`];
+                const inMonth = time && time.substring(0,10) >= monthStart;
+                const res = r[`interview${i}Result`];
+                if (res === '通过') { passTotal++; totalPass++; if (inMonth) { passMonth++; totalPassMonth++; } }
+                else if (res === '未通过') { totalPass++; if (inMonth) totalPassMonth++; }
+            }
+        });
+        document.getElementById('statPassRateTotal').textContent = totalPass > 0 ? Math.round(passTotal/totalPass*100) + '%' : '0%';
+        document.getElementById('statPassRateMonth').textContent = totalPassMonth > 0 ? Math.round(passMonth/totalPassMonth*100) + '%' : '0%';
+        const passNames = data.ledger.filter(r => {
+            for (let i = 1; i <= count; i++) { if (r[`interview${i}Result`] === '通过') return true; }
+            return false;
+        }).map(r => r.name).filter(Boolean);
+        document.getElementById('statPassNames').innerHTML = passNames.map(n => `<span class="name-tag">${n}</span>`).join('');
+
+        const offerRows = data.ledger.filter(r => r.finalStatus === '是');
+        const offerTotal = offerRows.length;
+        const offerMonth = offerRows.filter(r => {
+            for (let i = count; i >= 1; i--) {
+                if (r[`interview${i}Time`] && r[`interview${i}Time`].substring(0,10) >= monthStart) return true;
+            }
+            return false;
+        }).length;
+        document.getElementById('statOfferTotal').textContent = offerTotal;
+        document.getElementById('statOfferMonth').textContent = offerMonth;
+        document.getElementById('statOfferNames').innerHTML = offerRows.map(r => `<span class="name-tag">${r.name||'未命名'}</span>`).join('');
+    }
+
+    // ============================================================
+    //  文档 & 学习
+    // ============================================================
+    function renderDocs() {
+        const list = document.getElementById('docList');
+        if (data.docs.length === 0) list.innerHTML = '<div style="color:#c9b8b0;text-align:center;padding:30px 0;font-size:0.9rem;">📁 暂无文档，添加一个吧</div>';
+        else list.innerHTML = data.docs.map(d => `<div class="doc-item"><div class="doc-row"><a href="${d.link || '#'}" target="_blank" class="doc-link">${d.link || '无链接'}</a><span class="doc-note">${d.note || ''}</span><span class="doc-meta">📎 ${d.source || '未知来源'} · ${d.date || ''}</span><button class="doc-del" data-id="${d.id}">✕</button></div></div>`).join('');
+        document.querySelectorAll('.doc-del').forEach(btn => {
+            btn.addEventListener('click', function() { const id = parseInt(this.dataset.id); data.docs = data.docs.filter(d => d.id !== id); saveData(); renderDocs(); });
+        });
+    }
+
+    document.getElementById('docAddBtn').addEventListener('click', function() {
+        const link = document.getElementById('docLinkInput').value.trim();
+        const note = document.getElementById('docNoteInput').value.trim();
+        const source = document.getElementById('docSourceInput').value.trim();
+        if (!link && !note) { alert('请至少填写链接或备注'); return; }
+        data.docs.push({ id: genId(), link, note, source: source || '手动添加', date: getToday() });
+        document.getElementById('docLinkInput').value = ''; document.getElementById('docNoteInput').value = ''; document.getElementById('docSourceInput').value = '';
+        saveData(); renderDocs();
+    });
+
+    function renderLinks() {
+        const grid = document.getElementById('linksGrid');
+        if (data.studyLinks.length === 0) grid.innerHTML = '<div style="color:#c9b8b0;text-align:center;padding:30px 0;font-size:0.9rem;grid-column:1/-1;">🔗 暂无学习链接，添加一个吧</div>';
+        else grid.innerHTML = data.studyLinks.map(l => `<div class="link-card"><div class="link-title">${l.name || '未命名'}</div><a href="${l.url || '#'}" target="_blank" class="link-url">${l.url || '无链接'}</a><div class="link-desc">${l.desc || ''}</div><button class="link-del" data-id="${l.id}">✕ 删除</button></div>`).join('');
+        document.querySelectorAll('.link-del').forEach(btn => {
+            btn.addEventListener('click', function() { const id = parseInt(this.dataset.id); data.studyLinks = data.studyLinks.filter(l => l.id !== id); saveData(); renderLinks(); });
+        });
+    }
+
+    document.getElementById('linksAddBtn').addEventListener('click', function() {
+        const name = document.getElementById('linkNameInput').value.trim();
+        const url = document.getElementById('linkUrlInput').value.trim();
+        const desc = document.getElementById('linkDescInput').value.trim();
+        if (!name || !url) { alert('请至少填写名称和网址'); return; }
+        data.studyLinks.push({ id: genId(), name, url, desc });
+        document.getElementById('linkNameInput').value = ''; document.getElementById('linkUrlInput').value = ''; document.getElementById('linkDescInput').value = '';
+        saveData(); renderLinks();
+    });
+
+    // ============================================================
+    //  全部渲染
+    // ============================================================
+    function renderAll() {
+        renderLedger();
+        renderCalendar();
+        renderTodos();
+        renderPositions();
+        renderStats();
+        renderDocs();
+        renderLinks();
+    }
+
+    renderAll();
+    window.addEventListener('beforeunload', function() { saveData(); });
+    console.log('🌸 HR实习生小助手 · 流程增强版已启动！');
+</script>
+</body>
+</html>
