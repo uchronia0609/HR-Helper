@@ -2511,10 +2511,10 @@
                             <div class="stats-sub-names" id="statOfferTotalNames"></div>
                         </div>
                     </div>
-                    <div class="stats-weekly-report" id="weeklyReport">
-                        <div class="report-text" id="weeklyReportText">📊 本周收到 <span class="highlight-num">0</span> 份简历，邀约一面 <span class="highlight-num">0</span> 人：<span class="name-list">（暂无）</span></div>
-                        <button class="report-export-btn" id="exportReportBtn">📤 导出周报</button>
-                    </div>
+               <div class="stats-weekly-report" id="weeklyReport">
+    <div class="report-text" id="weeklyReportText" style="font-size:1.05rem;line-height:1.8;margin-bottom:6px;">本周收到 <span class="highlight-num">0</span> 份简历，邀约一面 <span class="highlight-num">0</span> 人：<span class="name-list">（暂无）</span></div>
+    <button class="report-export-btn" id="exportReportBtn" style="background:#d47a8a;border:none;color:white;padding:8px 28px;border-radius:30px;font-size:1rem;cursor:pointer;font-family:'Microsoft YaHei','PingFang SC',sans-serif;width:auto;">导出到周报</button>
+</div>
                 </div>
             </div>
 
@@ -4307,32 +4307,51 @@
                 `📊 本周收到 <span class="highlight-num">${weekResumeCount}</span> 份简历，邀约一面 <span class="highlight-num">${weekPassCount}</span> 人：<span class="name-list">${nameStr}</span>`;
         }
 
-        document.getElementById('exportReportBtn').addEventListener('click', function() {
-            const activeRows = data.ledger.filter(r => !r._deleted);
-            const weekStart = getWeekStart();
-            const maxRounds = getMaxRounds();
+      document.getElementById('exportReportBtn').addEventListener('click', function() {
+    const activeRows = data.ledger.filter(r => !r._deleted);
+    const weekStart = getWeekStart();
 
-            const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
-            const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time
-                .substring(0, 10) >= weekStart);
+    const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
+    const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0, 10) >= weekStart);
 
-            const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
-            const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
+    const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
+    const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
 
-            let reportText =
-                `📊 本周收到 ${resumeWeek.length} 份简历，邀约一面 ${passWeek.length} 人：${passNames.join('、') || '暂无'}`;
-            reportText += `\n\n📄 收到简历（${resumeWeek.length}人）：${resumeNames.join('、') || '暂无'}`;
-            reportText += `\n✅ 一面通过（${passWeek.length}人）：${passNames.join('、') || '暂无'}`;
+  let reportText = `本周收到 ${resumeWeek.length} 份简历，邀约一面 ${passWeek.length} 人：${passNames.join('、') || '暂无'}。收到简历（${resumeWeek.length}人）：${resumeNames.join('、') || '暂无'}。一面通过（${passWeek.length}人）：${passNames.join('、') || '暂无'}。`;
 
-            const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `周报_${getToday()}.txt`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-
-            navigator.clipboard.writeText(reportText).catch(() => {});
+    // 复制到剪贴板
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(reportText).then(function() {
+            var btn = document.getElementById('exportReportBtn');
+            var originalText = btn.textContent;
+            btn.textContent = '已复制 ✓';
+            setTimeout(function() { btn.textContent = originalText; }, 1500);
+        }).catch(function() {
+            fallbackCopy(reportText);
         });
+    } else {
+        fallbackCopy(reportText);
+    }
+});
+
+function fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        var btn = document.getElementById('exportReportBtn');
+        var originalText = btn.textContent;
+        btn.textContent = '已复制 ✓';
+        setTimeout(function() { btn.textContent = originalText; }, 1500);
+    } catch (e) {
+        alert('复制失败，请手动复制：\n\n' + text);
+    }
+    document.body.removeChild(textarea);
+}
 
         // ============================================================
         //  文档 & 学习
