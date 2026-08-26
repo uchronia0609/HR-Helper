@@ -800,9 +800,11 @@
             min-width: 80px;
         }
 
+        /* ===== 备注栏红色警告 ===== */
         .remark-warning {
             color: #d45a3a !important;
             font-weight: 700 !important;
+            font-size: 0.8rem !important;
         }
 
         .calendar-todo-container {
@@ -1553,19 +1555,13 @@
             border-radius: 16px;
             border: 1px solid rgba(235, 210, 200, 0.3);
             padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
             flex-shrink: 0;
         }
         .stats-weekly-report .report-text {
-            font-size: 0.85rem;
+            font-size: 1.05rem;
             color: #5a3a3e;
-            line-height: 1.6;
-            flex: 1;
-            min-width: 200px;
+            line-height: 1.8;
+            margin-bottom: 6px;
         }
         .stats-weekly-report .report-text .highlight-num {
             color: #d47a8a;
@@ -1576,22 +1572,18 @@
             font-weight: 500;
         }
         .stats-weekly-report .report-export-btn {
-            background: #6a8a8a;
+            background: #d47a8a;
             border: none;
             color: white;
-            padding: 8px 24px;
+            padding: 8px 28px;
             border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            white-space: nowrap;
-            flex-shrink: 0;
+            width: auto;
         }
         .stats-weekly-report .report-export-btn:hover {
-            background: #4a7a7a;
-            transform: scale(1.02);
+            background: #c06a7a;
         }
 
         /* ===== 文档页面 ===== */
@@ -2351,7 +2343,7 @@
             <button class="nav-btn" data-page="page-stats"><span class="icon">📊</span><span class="label">数据</span></button>
             <button class="nav-btn" data-page="page-docs"><span class="icon">📁</span><span class="label">文档</span></button>
             <button class="nav-btn" data-page="page-links"><span class="icon">🔗</span><span class="label">学习</span></button>
- 	    <button class="nav-btn" data-page="page-garden"><span class="icon">🌱</span><span class="label">种植园</span></button>
+            <button class="nav-btn" data-page="page-garden"><span class="icon">🌱</span><span class="label">种植园</span></button>
         </nav>
 
         <div class="main-content">
@@ -2511,10 +2503,10 @@
                             <div class="stats-sub-names" id="statOfferTotalNames"></div>
                         </div>
                     </div>
-               <div class="stats-weekly-report" id="weeklyReport">
-    <div class="report-text" id="weeklyReportText" style="font-size:1.05rem;line-height:1.8;margin-bottom:6px;">本周收到 <span class="highlight-num">0</span> 份简历，邀约一面 <span class="highlight-num">0</span> 人：<span class="name-list">（暂无）</span></div>
-    <button class="report-export-btn" id="exportReportBtn" style="background:#d47a8a;border:none;color:white;padding:8px 28px;border-radius:30px;font-size:1rem;cursor:pointer;font-family:'Microsoft YaHei','PingFang SC',sans-serif;width:auto;">导出到周报</button>
-</div>
+                    <div class="stats-weekly-report" id="weeklyReport">
+                        <div class="report-text" id="weeklyReportText">本周收到 <span class="highlight-num">0</span> 份简历，邀约一面 <span class="highlight-num">0</span> 人：<span class="name-list">（暂无）</span></div>
+                        <button class="report-export-btn" id="exportReportBtn">复制</button>
+                    </div>
                 </div>
             </div>
 
@@ -2522,12 +2514,11 @@
                 <div class="page-header"><div class="title">📁 工作文档</div></div>
                 <div class="doc-container">
                     <div class="doc-list" id="docList">
-                                                         <!-- ===== 内置教程 - 可折叠，默认收起 ===== -->
+                        <!-- ===== 内置教程 - 可折叠，默认收起 ===== -->
                         <div class="builtin-tutorial" id="builtinTutorial">
                             <div class="tutorial-header" id="tutorialToggle">
                                 <div class="tutorial-title">
                                     📖 招聘实习生新手教程
-                                   
                                 </div>
                                 <button class="toggle-btn" id="tutorialArrow">▼</button>
                             </div>
@@ -2536,7 +2527,7 @@
                                     <span>📌 目录：</span>
                                     <a href="#sec1">1. 第一天到公司</a>
                                     <a href="#sec2">2. 社招全流程指北</a>
-<span><span><span><span>        			仅供参考，以你mt的规定为准喵~</span>
+                                    <span style="color:#b0888a;font-size:0.75rem;margin-left:8px;">仅供参考，以你 MT 的规定为准喵~</span>
                                 </div>
 
                                 <!-- ===== Part1 ===== -->
@@ -2544,12 +2535,12 @@
                                     <div class="section-title"><span class="num">1.</span> 第一天当 HR 实习生，你需要知道什么</div>
                                     <div class="section-content">
                                         <p><strong>📍 公司基本信息</strong></p>
-                                       <p>公司的主营业务</p>
-<p>全公司组织架构 &amp; 你的人力资源部同事在做什么、MT 的工作风格、KPI</p>
-<p>你使用哪些招聘平台、你所招聘岗位的基本知识、筛选要求</p>
-<p>公司所在地、通勤方式 &amp; 你负责招聘的岗位的所在地（精确地址，候选人会关注上班地点，有的可能需要线下面试）</p>
-<p>公司食堂的位置 &amp; 周边外卖</p>
-      <p><br><br></p>
+                                        <p>公司的主营业务</p>
+                                        <p>全公司组织架构 &amp; 你的人力资源部同事在做什么、MT 的工作风格、KPI</p>
+                                        <p>你使用哪些招聘平台、你所招聘岗位的基本知识、筛选要求</p>
+                                        <p>公司所在地、通勤方式 &amp; 你负责招聘的岗位的所在地（精确地址，候选人会关注上班地点，有的可能需要线下面试）</p>
+                                        <p>公司食堂的位置 &amp; 周边外卖</p>
+                                        <p><br><br></p>
                                         <p style="margin-top:12px;"><strong>📞 电话约面标准话术</strong></p>
                                         <p style="color:#7a5a52;font-size:0.85rem;margin-bottom:4px;">自报家门 → 确认候选人沟通意向 → 询问地点是否可以接受 → 核对简历基本信息 → 过往几段工作的离职原因 → 过往年包、薪资构成与预期薪酬 → 约两个面试时间</p>
 
@@ -2574,34 +2565,37 @@
                                         </div>
 
                                         <p style="margin-top:8px;"><strong>💡 Tips：</strong></p>
-                                       <p>记得调整你的座机音量。座机号偶尔会被候选人的手机系统屏蔽，必要时换手机打。</p>
-<p>打电话时间最好在 10:00 之后，早上不要打，此时大厂员工可能没有起床。</p>
-<p>……</p>
- <p><br><br></p>
-                                        <!-- ===== 黑话移到这里 ===== -->
-                                        <p style="margin-top:12px;"><strong>🖤 黑话</strong></p>
-                                      <p>JD：   Job Description，岗位说明书，岗位职责、任职要求</p>
-<p>HC：   Head Count，人头编制、招聘名额，<strong>有没有 HC = 有没有招人名额</strong></p>
-<p> 活水：  不去外面跳槽，在本公司内部，投递别的部门岗位</p>
-
-                                        <!-- ===== 六大模块三大支柱移到这里，不用粉气泡 ===== -->
+                                        <p>记得调整你的座机音量。座机号偶尔会被候选人的手机系统屏蔽，必要时换手机打。</p>
+                                        <p>打电话时间最好在 10:00 之后，早上不要打，此时大厂员工可能没有起床。</p>
+                                        <p>……</p>
                                         <p><br><br></p>
-                                      <p style="margin-top:10px;"><strong>📌 人力资源六大模块</strong></p>
-<p>人力资源规划、招聘与配置、培训与开发、绩效管理、薪酬福利管理、员工关系管理</p>
 
-<p style="margin-top:10px;"><strong>📌 人力资源三大支柱</strong></p>
-<p><strong>COE</strong> — 专家中心（人力资源专家），做制度、方案、顶层设计</p>
-<p><strong>HRBP</strong> — 人力资源业务伙伴，派驻业务部门，贴近业务</p>
-<p><strong>SSC</strong> — 共享服务中心，事务性工作集中处理（入转调离、社保、合同等）</p>
+                                        <!-- ===== 黑话 ===== -->
+                                        <p style="margin-top:12px;"><strong>🖤 黑话</strong></p>
+                                        <p>JD：   Job Description，岗位说明书，岗位职责、任职要求</p>
+                                        <p>HC：   Head Count，人头编制、招聘名额，<strong>有没有 HC = 有没有招人名额</strong></p>
+                                        <p>活水：  不去外面跳槽，在本公司内部，投递别的部门岗位</p>
+
+                                        <p><br><br></p>
+
+                                        <!-- ===== 六大模块三大支柱 ===== -->
+                                        <p style="margin-top:10px;"><strong>📌 人力资源六大模块</strong></p>
+                                        <p>人力资源规划、招聘与配置、培训与开发、绩效管理、薪酬福利管理、员工关系管理</p>
+
+                                        <p style="margin-top:10px;"><strong>📌 人力资源三大支柱</strong></p>
+                                        <p><strong>COE</strong> — 专家中心（人力资源专家），做制度、方案、顶层设计</p>
+                                        <p><strong>HRBP</strong> — 人力资源业务伙伴，派驻业务部门，贴近业务</p>
+                                        <p><strong>SSC</strong> — 共享服务中心，事务性工作集中处理（入转调离、社保、合同等）</p>
                                     </div>
                                 </div>
-      <p><br><br></p>
+
+                                <p><br><br></p>
+
                                 <!-- ===== Part2 ===== -->
                                 <div class="section" id="sec2">
- 				    <p><br><br></p>
+                                    <p><br><br></p>
                                     <div class="section-title"><span class="num">2.</span> 社招全流程指北</div>
                                     <div class="section-content">
-                                       
                                         <p><strong>📌 一、岗位 JD 撰写、审核与渠道发布</strong></p>
                                         <p><strong>1. 标准化岗位 JD 撰写</strong></p>
                                         <p>用人部门需向人力资源部门明确提供对应岗位的工作职责、工作内容、任职要求等核心信息，由招聘 HR 严格按照 JD 撰写规范，整理输出标准化的岗位招聘启事（JD），确保内容完整、表述专业，符合公司统一的格式标准。</p>
@@ -2707,9 +2701,7 @@
                                         <p style="margin-top:14px;"><strong>📌 八、录用审批流程</strong></p>
                                         <ul>
                                             <li><span class="tag">8.1</span> 背景调查结果审核：候选人完成面试环节后，招聘 HR 需发起背景调查请求，背调完成后，需对背调报告进行审核，背调合格（蓝灯结果，风险因素经评估无异常）的候选人方可进入录用审批环节。</li>
-                                            <li><span class="tag">8.2</span> 薪酬谈判与定薪建议：招聘 HR 需结合用人部门的面试评价、岗位任职要求，与候选人开展薪酬预沟通，根据沟通结果，向用人部门总经理提出定薪建议，经部门总经理确认后，在人力资源系统中提交录用审批申请。
-                                                
-                                            </li>
+                                            <li><span class="tag">8.2</span> 薪酬谈判与定薪建议：招聘 HR 需结合用人部门的面试评价、岗位任职要求，与候选人开展薪酬预沟通，根据沟通结果，向用人部门总经理提出定薪建议，经部门总经理确认后，在人力资源系统中提交录用审批申请。</li>
                                             <li><span class="tag">8.3</span> 录用审批提交：在人力资源系统中提交录用审批时，需严格按照公司规定的格式要求，提交完整的定岗录用相关材料，审批流程按公司 OA 系统配置的流程执行，同岗位需求审批流程。</li>
                                         </ul>
 
@@ -2748,13 +2740,10 @@
                                         </ul>
                                     </div>
                                 </div>
-
-                                <!-- ===== Part3 已删除，内容合并到 Part1 ===== -->
                             </div>
                         </div>
                         <!-- ===== 内置教程结束 ===== -->
-
-                    </div>   <!-- 这里闭合 doc-list -->
+                    </div>
                     <div class="doc-add-row">
                         <input class="doc-link-input" id="docLinkInput" placeholder="🔗 文档链接">
                         <textarea class="doc-note-input" id="docNoteInput" placeholder="📝 备注/碎碎念" rows="1"></textarea>
@@ -2945,14 +2934,16 @@
         }
 
         function isUrgent(row) {
-            if (row._deleted) return false;
-            if (row.resumeStatus === '通过' && row.phoneNote !== '是') return true;
-            const maxRounds = getMaxRounds();
-            for (let i = 1; i < maxRounds; i++) {
-                if (row[`interview${i}Result`] === '通过' && !row[`interview${i+1}Time`]) return true;
-            }
-            return false;
-        }
+    if (row._deleted) return false;
+    // ===== 已入职的不算待催办 =====
+    if (row.finalStatus === '已入职') return false;
+    if (row.resumeStatus === '通过' && row.phoneNote !== '是') return true;
+    const maxRounds = getMaxRounds();
+    for (let i = 1; i < maxRounds; i++) {
+        if (row[`interview${i}Result`] === '通过' && !row[`interview${i+1}Time`]) return true;
+    }
+    return false;
+}
 
         // ============================================================
         //  种植园核心逻辑
@@ -3453,6 +3444,7 @@
             const colgroup = document.getElementById('colgroup');
             const maxRounds = getMaxRounds();
 
+            // ===== 表头：入职判定 → 入职情况 =====
             let headerHtml = `
                 <th class="col-seq">序号</th>
                 <th class="col-delete-actions">操作</th>
@@ -3465,7 +3457,7 @@
                 headerHtml += `<th class="col-interview-time">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间</th>
                                <th class="col-interview-result">${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果</th>`;
             }
-            headerHtml += `<th class="col-final">入职判定</th><th class="col-remark">备注</th>`;
+            headerHtml += `<th class="col-final">入职情况</th><th class="col-remark">备注</th>`;
             thead.innerHTML = headerHtml;
 
             let colHtml =
@@ -3508,13 +3500,37 @@
                 else if (offered) rowClass = 'row-offered';
                 else if (failed) rowClass = 'row-failed';
 
-                let remarkWarning = '';
-                if (!isDeleted && row.lastUpdate) {
-                    const days = daysSince(row.lastUpdate);
-                    if (days >= 5) {
-                        remarkWarning = `${days}天没动喵！`;
-                    }
+               // ===== X天没动喵！逻辑：取所有面试时间中最晚的一个 =====
+let remarkWarning = '';
+if (!isDeleted) {
+    // 收集所有时间字段
+    const timeFields = ['resumeDate'];
+    for (let i = 1; i <= 5; i++) {
+        timeFields.push(`interview${i}Time`);
+    }
+    
+    // 找出最晚的一个时间
+    let latestTime = null;
+    timeFields.forEach(field => {
+        const val = row[field];
+        if (val) {
+            // 面试时间格式是 "2026-08-12T10:30"，取前10位作为日期
+            const dateStr = val.substring(0, 10);
+            if (dateStr) {
+                if (!latestTime || dateStr > latestTime) {
+                    latestTime = dateStr;
                 }
+            }
+        }
+    });
+    
+    if (latestTime) {
+        const days = daysSince(latestTime);
+        if (days >= 5) {
+            remarkWarning = `${days}天没动喵！`;
+        }
+    }
+}
 
                 let rowHtml = `<tr class="${rowClass}">`;
 
@@ -3546,7 +3562,7 @@
 
                 const showPhone = shouldShowColumn(row, 'phone', maxRounds);
                 rowHtml +=
-                    `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">请选择</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
+    `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
 
                 for (let i = 1; i <= maxRounds; i++) {
                     const timeField = `interview${i}Time`;
@@ -3570,6 +3586,7 @@
                 rowHtml +=
                     `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="流程中" ${row.finalStatus === '流程中' || !row.finalStatus ? 'selected' : ''}>流程中</option><option value="已入职" ${row.finalStatus === '已入职' ? 'selected' : ''}>已入职</option><option value="未入职" ${row.finalStatus === '未入职' ? 'selected' : ''}>未入职</option></select></td>`;
 
+                // ===== 备注栏：如果有警告则显示红色警告，否则显示普通备注 =====
                 let remarkValue = row.remark || '';
                 if (remarkWarning) {
                     remarkValue = remarkWarning;
@@ -3725,7 +3742,7 @@
                 header.push(`${['一','二','三','四','五','六','七','八','九','十'][i-1]}面时间`);
                 header.push(`${['一','二','三','四','五','六','七','八','九','十'][i-1]}面结果`);
             }
-            header.push('入职判定', '备注');
+            header.push('入职情况', '备注');
             rows.push(header);
 
             activeRows.forEach((r, idx) => {
@@ -3753,10 +3770,10 @@
                 position: '',
                 resumeDate: getToday(),
                 resumeStatus: '',
-                phoneNote: '',
+                // ===== 电话约面默认改为「否」=====
+                phoneNote: '否',
                 finalStatus: '流程中',
                 remark: '',
-                lastUpdate: new Date().toISOString()
             };
             for (let i = 1; i <= 10; i++) {
                 newRow[`interview${i}Time`] = '';
@@ -4303,70 +4320,70 @@
             const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
             const nameStr = passNames.length > 0 ? passNames.join('、') : '（暂无）';
             document.getElementById('weeklyReportText').innerHTML =
-                `📊 本周收到 <span class="highlight-num">${weekResumeCount}</span> 份简历，邀约一面 <span class="highlight-num">${weekPassCount}</span> 人：<span class="name-list">${nameStr}</span>`;
+                `本周收到 <span class="highlight-num">${weekResumeCount}</span> 份简历，邀约一面 <span class="highlight-num">${weekPassCount}</span> 人：<span class="name-list">${nameStr}</span>`;
         }
 
-      document.getElementById('exportReportBtn').addEventListener('click', function() {
-    const activeRows = data.ledger.filter(r => !r._deleted);
-    const weekStart = getWeekStart();
+        document.getElementById('exportReportBtn').addEventListener('click', function() {
+            const activeRows = data.ledger.filter(r => !r._deleted);
+            const weekStart = getWeekStart();
 
-    const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
-    const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0, 10) >= weekStart);
+            const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
+            const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0, 10) >= weekStart);
 
-    const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
-    const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
+            const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
+            const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
 
-  let reportText = `本周收到 ${resumeWeek.length} 份简历，邀约一面 ${passWeek.length} 人：${passNames.join('、') || '暂无'}。收到简历（${resumeWeek.length}人）：${resumeNames.join('、') || '暂无'}。一面通过（${passWeek.length}人）：${passNames.join('、') || '暂无'}。`;
+            let reportText = `本周收到 ${resumeWeek.length} 份简历，邀约一面 ${passWeek.length} 人：${passNames.join('、') || '暂无'}。收到简历（${resumeWeek.length}人）：${resumeNames.join('、') || '暂无'}。一面通过（${passWeek.length}人）：${passNames.join('、') || '暂无'}。`;
 
-    // 复制到剪贴板
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(reportText).then(function() {
-            var btn = document.getElementById('exportReportBtn');
-            var originalText = btn.textContent;
-            btn.textContent = '已复制 ✓';
-            setTimeout(function() { btn.textContent = originalText; }, 1500);
-        }).catch(function() {
-            fallbackCopy(reportText);
+            // 复制到剪贴板
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(reportText).then(function() {
+                    var btn = document.getElementById('exportReportBtn');
+                    var originalText = btn.textContent;
+                    btn.textContent = '已复制 ✓';
+                    setTimeout(function() { btn.textContent = originalText; }, 1500);
+                }).catch(function() {
+                    fallbackCopy(reportText);
+                });
+            } else {
+                fallbackCopy(reportText);
+            }
         });
-    } else {
-        fallbackCopy(reportText);
-    }
-});
 
-function fallbackCopy(text) {
-    var textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-        document.execCommand('copy');
-        var btn = document.getElementById('exportReportBtn');
-        var originalText = btn.textContent;
-        btn.textContent = '已复制 ✓';
-        setTimeout(function() { btn.textContent = originalText; }, 1500);
-    } catch (e) {
-        alert('复制失败，请手动复制：\n\n' + text);
-    }
-    document.body.removeChild(textarea);
-}
+        function fallbackCopy(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                var btn = document.getElementById('exportReportBtn');
+                var originalText = btn.textContent;
+                btn.textContent = '已复制 ✓';
+                setTimeout(function() { btn.textContent = originalText; }, 1500);
+            } catch (e) {
+                alert('复制失败，请手动复制：\n\n' + text);
+            }
+            document.body.removeChild(textarea);
+        }
 
         // ============================================================
         //  文档 & 学习
         // ============================================================
         function renderDocs() {
             const list = document.getElementById('docList');
-            
+
             // 获取内置教程元素（保留它）
             const tutorialEl = document.getElementById('builtinTutorial');
-            
+
             // 清空列表，但保留教程
             list.innerHTML = '';
-            
+
             // 重新添加教程
             list.appendChild(tutorialEl);
-            
+
             // 添加用户文档
             if (data.docs.length === 0) {
                 const emptyMsg = document.createElement('div');
