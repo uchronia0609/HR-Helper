@@ -2587,7 +2587,7 @@
             if (visiblePlants.length === 0) {
                 const hasActiveCandidates = data.ledger.some(r => !r._deleted && !data.removedFromGarden.includes(r.id));
                 plot.innerHTML = `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#aaa;font-size:1.2rem;text-align:center;pointer-events:none;">
-                    ${hasActiveCandidates ? '🌱 所有候选人都已收获或枯萎……<br><span style="font-size:0.8rem;">去台账添加新的候选人吧！</span>' : '🌱 还没有候选人呢……<br><span style="font-size:0.8rem;">去台账添加一位吧！</span>'}</div>`;
+                    ${hasActiveCandidates ? '🌱 所有候选人都已收获或枯萎……<br><span style="font-size:0.8rem;">去台账添加新的候选人吧！</span>' : '🌱 还没有候选人喵……<br><span style="font-size:0.8rem;">去台账添加一位吧！</span>'}</div>`;
             }
 
             document.querySelectorAll('.plant-container').forEach(el => {
