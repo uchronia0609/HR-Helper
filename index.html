@@ -3474,9 +3474,9 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
             document.getElementById('statInterviewWeekNames').innerHTML = interviewWeek.map(r => '<span class="name-tag">'+(r.name||'未命名')+'</span>').join('') || '<span class="empty-tag">暂无</span>';
             document.getElementById('statInterviewMonthNames').innerHTML = interviewMonth.map(r => '<span class="name-tag">'+(r.name||'未命名')+'</span>').join('') || '<span class="empty-tag">暂无</span>';
 
-            const passTotal = activeRows.filter(r => r.interview1Result === '通过');
-            const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0,10) >= weekStart);
-            const passMonth = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0,10) >= monthStart);
+const passTotal = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time);
+const passWeek = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= weekStart);
+const passMonth = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= monthStart);
             document.getElementById('statPassTotal').textContent = passTotal.length;
             document.getElementById('statPassWeek').textContent = passWeek.length;
             document.getElementById('statPassMonth').textContent = passMonth.length;
@@ -3531,7 +3531,7 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
     reportText += '（' + mondayStr + ' — ' + fridayStr + '）\n';
 reportText += '\n';
 reportText += '一、本周主要工作完成情况\n';
-reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过（' + passWeek.length + '人）：' + (passNames.join('、') || '暂无') + '。';
+reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过' + passWeek.length + '人：' + (passNames.join('、') || '暂无') + '。';
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(reportText).then(function() {
