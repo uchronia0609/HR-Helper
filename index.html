@@ -241,7 +241,7 @@
             max-width: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: normal;
             background: rgba(255, 255, 255, 0.6);
             padding: 1px 8px;
             border-radius: 10px;
@@ -255,7 +255,7 @@
             max-width: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: normal;
             background: rgba(255, 255, 255, 0.4);
             padding: 0 8px;
             border-radius: 8px;
@@ -650,9 +650,9 @@
         .result-select option { white-space: normal; line-height: 1.3; }
 
         .col-seq { width: 40px; min-width: 40px; max-width: 40px; }
-        .col-delete-actions { width: 120px; min-width: 100px; }
+        .col-delete-actions { width: 60px; min-width: 60px; }
         .col-name { width: 80px; min-width: 70px; }
-        .col-position { width: 100px; min-width: 80px; }
+        .col-position { width: 100px; min-width: 140px; }
         .col-resume-date { width: 110px; min-width: 100px; }
         .col-resume-status { width: 100px; min-width: 90px; }
         .col-phone { width: 100px; min-width: 90px; }
@@ -1319,6 +1319,7 @@
             flex-wrap: wrap;
             margin-top: 6px;
             flex-shrink: 0;
+            align-items: center;
         }
         .data-actions-row .action-btn {
             background: #6a8a8a;
@@ -1353,6 +1354,18 @@
             background: #d47a8a;
         }
         .data-actions-row .action-btn.export-excel-btn:hover { background: #c06a7a; }
+        .data-actions-row .import-help-link {
+            font-size: 0.8rem;
+            color: #d47a8a;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: 4px;
+            transition: color 0.2s;
+        }
+        .data-actions-row .import-help-link:hover {
+            color: #b05a6a;
+        }
 
         /* ===== 文档页面 ===== */
         .doc-container {
@@ -2034,6 +2047,7 @@
                         <button class="action-btn export-excel-btn" id="exportExcelBtn">📤 导出台账</button>
                         <button class="action-btn" id="exportJsonBtn">📄 导出JSON</button>
                         <button class="action-btn import-btn" id="importJsonBtn">📂 导入JSON <input type="file" id="importJsonInput" accept=".json"></button>
+                        <span class="import-help-link" id="importHelpLink">如何导入JSON？</span>
                     </div>
                 </div>
             </div>
@@ -2187,10 +2201,10 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                                         <ul><li><span class="tag">4.1</span> 面试统筹安排：面试环节由人力资源部门与用人部门共同统筹协调，招聘 HR 需根据用人部门的面试考官排班、候选人时间，合理统筹安排面试场次，避免面试时间冲突。</li><li><span class="tag">4.2</span> 面试资源协调：需提前协调好面试场地、面试设备（线上面试需提前调试好会议系统、设备），准备好面试相关的物料，确保面试环节顺利开展。</li><li><span class="tag">4.3</span> 面试信息同步：需提前将面试安排同步给面试考官与候选人，面试前一天再次提醒双方，确保双方按时参与面试。</li><li><span class="tag">4.4</span> 面试流程跟进：面试过程中，招聘 HR 需全程跟进，及时处理面试过程中出现的突发情况，面试结束后，及时收集面试考官的面试评价与结果反馈。</li></ul>
                                         <p><br></p>
                                         <p style="margin-top:14px;"><strong>📌 五、笔试考察及人才测评</strong></p>
-                                        <ul><li><span class="tag">5.1</span> 笔试环节组织：针对有笔试要求的岗位，由人力资源部门联合用人部门制定笔试内容、笔试时间、笔试形式，提前做好笔试的命题、考场安排、设备调试等准备工作，确保笔试环节公平、公正、有序开展。</li><li><span class="tag">5.2</span> 人才测评管理：针对需要开展人才测评的岗位，需选用合规的人才测评工具，在候选人授权同意的前提下，开展人才测评工作，测评结果需同步至用人部门，作为候选人能力评估的参考依据。</li><li><span class="tag">5.3</span> 结果汇总与反馈：笔试与测评结束后，需及时汇总成绩与测评结果，筛选通过的候选人进入下一招聘环节，未通过的候选人需做好结果同步与归档。</li></ul>
+                                        <ul><li><span class="tag">5.1</span> 笔试环节组织：针对有笔试要求的岗位，由人力资源部门联合用人部门制定笔试内容、笔试时间、笔试形式，提前做好笔试的命题、考场安排、设备调试等准备工作，确保笔试环节公平、公正、有序开展。</li><li><span class="tag">5.2</span> 人才测评管理：针对需要开展人才测评的岗位，需选用合规的人才测评工具，在候选人授权同意的前提下，开展人才测评工作，测评结果需同步至用人部门，作为候选人能力评估的参考依据。</li><li><span class="tag">5.3</span> 结果汇总与反馈：笔试与测评结束后，需及时汇总成绩与测评结果，筛选通过的候选人进入下一招聘环节，不通过的候选人需做好结果同步与归档。</li></ul>
                                         <p><br></p>
                                         <p style="margin-top:14px;"><strong>📌 六、多维度面试考察</strong></p>
-                                        <ul><li><span class="tag">6.1</span> 面试分级机制：公司面试考察采用分级面试机制，根据岗位层级不同，设置对应的面试轮次与考官配置，确保面试考察的专业性与全面性。</li><li><span class="tag">6.2</span> 面试考察维度：面试过程中，考官需从候选人的专业能力、项目经验、职业素养、抗压能力、岗位匹配度等多个维度进行综合考察，客观、公正地填写面试评价表，给出明确的面试结论。</li><li><span class="tag">6.3</span> 面试结果反馈：每一轮面试结束后，面试考官需及时将面试评价与结果反馈至人力资源部门，由招聘 HR 同步至候选人，同时协调安排下一轮面试，对于未通过面试的候选人，需做好结果告知与人才库归档。</li></ul>
+                                        <ul><li><span class="tag">6.1</span> 面试分级机制：公司面试考察采用分级面试机制，根据岗位层级不同，设置对应的面试轮次与考官配置，确保面试考察的专业性与全面性。</li><li><span class="tag">6.2</span> 面试考察维度：面试过程中，考官需从候选人的专业能力、项目经验、职业素养、抗压能力、岗位匹配度等多个维度进行综合考察，客观、公正地填写面试评价表，给出明确的面试结论。</li><li><span class="tag">6.3</span> 面试结果反馈：每一轮面试结束后，面试考官需及时将面试评价与结果反馈至人力资源部门，由招聘 HR 同步至候选人，同时协调安排下一轮面试，对于不通过面试的候选人，需做好结果告知与人才库归档。</li></ul>
                                         <p><br></p>
                                         <p style="margin-top:14px;"><strong>📌 七、候选人资格审查</strong></p>
                                         <ul><li><span class="tag">7.1</span> 资质真实性核查：人力资源部门需对候选人提供的所有个人资料进行真实性核查，包括但不限于学历学位证书、职业资格证书、工作经历证明等，确保候选人提供的信息真实、合规。</li><li><span class="tag">7.2</span> 背景调查管理：在候选人授权同意的前提下，按岗位级别要求开展背景调查工作，背景调查重点核实候选人过往工作经历、是否存在严重工作失误、重大违纪违规行为等情况，并出具完整的背景调查报告。<ul style="margin-top:4px;padding-left:20px;font-size:0.85rem;color:#5a4a4a;"><li>基础岗位原则上由 HR 自行开展背景调查。高级岗位，需委托专业背调供应商开展背景调查。</li><li>背景调查范围与周期需严格按照公司规定执行，确保调查结果全面、准确。</li></ul></li><li><span class="tag">7.3</span> 体检合规性审查：候选人需提供公司认可的体检机构出具的体检报告，确保候选人身体状况符合岗位任职要求，体检报告需经人力资源部门审核确认合规。</li></ul>
@@ -2368,16 +2382,70 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         function getPositionRounds(posName) { const pos = data.positions.find(p => p.name === posName); if (pos && pos.rounds) return pos.rounds; return 3; }
         function getMaxRounds() { let max = 3; data.positions.forEach(p => { if (p.rounds && p.rounds > max) max = p.rounds; }); return max; }
 
-        function isUrgent(row) {
-            if (row._deleted) return false;
-            if (row.finalStatus === '已入职') return false;
-            if (row.resumeStatus === '通过' && row.phoneNote !== '是') return true;
-            const maxRounds = getMaxRounds();
-            for (let i = 1; i < maxRounds; i++) {
-                if (row['interview'+i+'Result'] === '通过' && !row['interview'+(i+1)+'Time']) return true;
+        // ============================================================
+        //  待催办逻辑 - 已修改
+        // ============================================================
+function isUrgent(row) {
+    // 已删除、已入职、不入职 → 不催办
+    if (row._deleted) return false;
+    if (row.finalStatus === '已入职') return false;
+    if (row.finalStatus === '不入职') return false;
+    if (row.phoneNote === '已拒绝') return false;
+    if (row.resumeStatus === '不通过') return false;
+
+    // 情况1：简历待MT审核，电话约面 = 否/打不通 → 催办
+    if ((row.resumeStatus === '' || row.resumeStatus === '待MT审核') && 
+        (row.phoneNote === '否' || row.phoneNote === '打不通')) {
+        return true;
+    }
+
+    // 情况2：简历通过 + 电话约面 ≠ 是 → 催办
+    if (row.resumeStatus === '通过' && row.phoneNote !== '是') {
+        return true;
+    }
+
+    // 情况3：面试流程中的催办
+    const maxRounds = getMaxRounds();
+    const now = new Date();
+
+    for (let i = 1; i <= maxRounds; i++) {
+        const timeField = 'interview'+i+'Time';
+        const resultField = 'interview'+i+'Result';
+        const timeVal = row[timeField];
+        const resultVal = row[resultField];
+
+        // 【新增】第1轮面试结果 = 待业务出结果，且时间已过 → 催办
+        if (i === 1 && resultVal === '待业务出结果' && timeVal) {
+            const interviewDate = new Date(timeVal);
+            if (interviewDate < now) {
+                return true;
             }
-            return false;
         }
+
+        // 如果这一轮结果为"待业务出结果"，且上一轮是"通过"，且时间已过 → 催办
+        if (i > 1) {
+            const prevResult = row['interview'+(i-1)+'Result'];
+            const prevTime = row['interview'+(i-1)+'Time'];
+            if (prevResult === '通过' && prevTime) {
+                const prevDate = new Date(prevTime);
+                if (prevDate < now && (resultVal === '' || resultVal === '待业务出结果')) {
+                    return true;
+                }
+            }
+        }
+
+        // 如果第i轮结果是"通过" + 下一轮时间为空 → 催办
+        if (resultVal === '通过') {
+            const nextTimeField = 'interview'+(i+1)+'Time';
+            const nextTimeVal = row[nextTimeField];
+            if (!nextTimeVal) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
         // ============================================================
         //  种植园核心逻辑
@@ -2385,11 +2453,12 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         function getPlantStatus(row) {
             if (row._deleted) return 'deleted';
             if (row.finalStatus === '已入职') return 'harvest';
-            if (row.finalStatus === '未入职') return 'wilted';
+            if (row.finalStatus === '不入职') return 'wilted';
+	    if (row.phoneNote === '已拒绝') return 'wilted';
             if (row.resumeStatus === '不通过') return 'wilted';
             const maxRounds = getMaxRounds();
             for (let i = 1; i <= maxRounds; i++) {
-                if (row['interview'+i+'Result'] === '未通过') return 'wilted';
+                if (row['interview'+i+'Result'] === '不通过') return 'wilted';
             }
             let maxRoundReached = 0;
             for (let i = 1; i <= maxRounds; i++) {
@@ -2423,11 +2492,12 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         function getGardenStatusFromRow(row) {
             if (row._deleted) return 'deleted';
             if (row.finalStatus === '已入职') return 'harvest';
-            if (row.finalStatus === '未入职') return 'wilted';
+            if (row.finalStatus === '不入职') return 'wilted';
+	    if (row.phoneNote === '已拒绝') return 'wilted';
             if (row.resumeStatus === '不通过') return 'wilted';
             const maxRounds = getMaxRounds();
             for (let i = 1; i <= maxRounds; i++) {
-                if (row['interview'+i+'Result'] === '未通过') return 'wilted';
+                if (row['interview'+i+'Result'] === '不通过') return 'wilted';
             }
             let maxRoundReached = 0;
             for (let i = 1; i <= maxRounds; i++) {
@@ -2515,7 +2585,7 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                     if (confirmed) {
                         data.ledger = [];
                         data.gardenPlants = [];
- 			data.docs = [];   
+                        data.docs = [];   
                         data.removedFromGarden = [];
                         data.glassesCount = 0;
                         data._idCounter = 1000;
@@ -2523,53 +2593,53 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                         renderAll();
                     }
                 } else if (action === 'reset-all') {
-    const confirmed = await showCustomModal('🔄', '重置 HRmeow', '确定要重置所有数据吗？此操作将清除所有台账、待办、文档、岗位等数据，回到第一次使用前的状态，不可撤销！', true);
-    if (confirmed) {
-        // 清空所有数据
-        data.ledger = [];
-        data.shortTodos = [];
-        data.longTodos = [];
-        data.trashTodos = [];
-        data.positions = [];
-        data.docs = [];
-        data.studyLinks = [];
-        data.gardenPlants = [];
-        data.removedFromGarden = [];
-        data.glassesCount = 0;
-        data.companyName = '';
-        data.startDate = '';
-        data.kpiText = '';
-        data.selectedPositionId = null;
-        data.filterPosition = '';
-        data.filterUrgent = false;
-        data._idCounter = 1000;
-        saveData();
-        // 重新加载预设学习链接
-        const presetLinks = [
-            { name: 'VLOOKUP 函数教程', url: 'https://www.cnblogs.com/yxysuanfa/p/19209616', desc: 'HR必学vlookup函数' },
-            { name: 'HR 常用公式合集', url: 'https://blog.csdn.net/amsonga/article/details/107709963', desc: 'Excel 教程' },
-            { name: '全国985/211高校名单', url: 'https://www.jijie.ink/tool/university-query', desc: '教育部官方名单' },
-            { name: 'QS世界大学排名', url: 'https://xuanxiao.org/rankings/qs/world-university-rankings', desc: 'QS最新排名' },
-            { name: '清华大学就业办', url: 'https://career.tsinghua.edu.cn/info/1018/4798.html', desc: 'C9就业办' },
-            { name: '北京大学就业办', url: 'https://scc.pku.edu.cn/', desc: 'C9就业办' },
-            { name: '复旦大学就业办', url: 'https://career.fudan.edu.cn/News/zdydetail.html?cateid=738544fb-5c14-527d-4bfc-868e7670bc20&id=35cd4caf-bf01-dc8d-580f-80d3bfa083ac', desc: 'C9就业办' },
-            { name: '上海交通大学就业办', url: 'https://www.job.sjtu.edu.cn/career/news/view/lxzpzn/102844702012870656', desc: 'C9就业办' },
-            { name: '浙江大学就业办', url: 'https://www.career.zju.edu.cn/contacts?lmid=739BEBB729FF2B25E0538713470A6C41', desc: 'C9就业办' },
-            { name: '中国科学技术大学就业办', url: 'https://www.job.ustc.edu.cn/CollegeEmployment/index.aspx', desc: 'C9就业办' },
-            { name: '南京大学就业办', url: 'https://jw.nju.edu.cn/c9/c4/c24683a510404/page.html', desc: 'C9就业办' },
-            { name: '西安交通大学就业办', url: 'https://job.xjtu.edu.cn/frontpage/xjtu/html/newsDetail.html?id=f0c28d95cc0b40649c1ed8a8db3260b8', desc: 'C9就业办' },
-            { name: '哈尔滨工业大学就业办', url: 'https://career.hit.edu.cn/zhxy-xszyfzpt/lxfs', desc: 'C9就业办' }
-        ];
-        data.studyLinks = presetLinks.map(p => ({ id: genId(), name: p.name, url: p.url, desc: p.desc }));
-        saveData();
-        renderAll();
-        // 跳转到台账页面
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-page="page-ledger"]').classList.add('active');
-        document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-ledger').classList.add('active');
-    }
-}
+                    const confirmed = await showCustomModal('🔄', '重置 HRmeow', '确定要重置所有数据吗？此操作将清除所有台账、待办、文档、岗位等数据，回到第一次使用前的状态，不可撤销！', true);
+                    if (confirmed) {
+                        // 清空所有数据
+                        data.ledger = [];
+                        data.shortTodos = [];
+                        data.longTodos = [];
+                        data.trashTodos = [];
+                        data.positions = [];
+                        data.docs = [];
+                        data.studyLinks = [];
+                        data.gardenPlants = [];
+                        data.removedFromGarden = [];
+                        data.glassesCount = 0;
+                        data.companyName = '';
+                        data.startDate = '';
+                        data.kpiText = '';
+                        data.selectedPositionId = null;
+                        data.filterPosition = '';
+                        data.filterUrgent = false;
+                        data._idCounter = 1000;
+                        saveData();
+                        // 重新加载预设学习链接
+                        const presetLinks = [
+                            { name: 'VLOOKUP 函数教程', url: 'https://www.cnblogs.com/yxysuanfa/p/19209616', desc: 'HR必学vlookup函数' },
+                            { name: 'HR 常用公式合集', url: 'https://blog.csdn.net/amsonga/article/details/107709963', desc: 'Excel 教程' },
+                            { name: '全国985/211高校名单', url: 'https://www.jijie.ink/tool/university-query', desc: '教育部官方名单' },
+                            { name: 'QS世界大学排名', url: 'https://xuanxiao.org/rankings/qs/world-university-rankings', desc: 'QS最新排名' },
+                            { name: '清华大学就业办', url: 'https://career.tsinghua.edu.cn/info/1018/4798.html', desc: 'C9就业办' },
+                            { name: '北京大学就业办', url: 'https://scc.pku.edu.cn/', desc: 'C9就业办' },
+                            { name: '复旦大学就业办', url: 'https://career.fudan.edu.cn/News/zdydetail.html?cateid=738544fb-5c14-527d-4bfc-868e7670bc20&id=35cd4caf-bf01-dc8d-580f-80d3bfa083ac', desc: 'C9就业办' },
+                            { name: '上海交通大学就业办', url: 'https://www.job.sjtu.edu.cn/career/news/view/lxzpzn/102844702012870656', desc: 'C9就业办' },
+                            { name: '浙江大学就业办', url: 'https://www.career.zju.edu.cn/contacts?lmid=739BEBB729FF2B25E0538713470A6C41', desc: 'C9就业办' },
+                            { name: '中国科学技术大学就业办', url: 'https://www.job.ustc.edu.cn/CollegeEmployment/index.aspx', desc: 'C9就业办' },
+                            { name: '南京大学就业办', url: 'https://jw.nju.edu.cn/c9/c4/c24683a510404/page.html', desc: 'C9就业办' },
+                            { name: '西安交通大学就业办', url: 'https://job.xjtu.edu.cn/frontpage/xjtu/html/newsDetail.html?id=f0c28d95cc0b40649c1ed8a8db3260b8', desc: 'C9就业办' },
+                            { name: '哈尔滨工业大学就业办', url: 'https://career.hit.edu.cn/zhxy-xszyfzpt/lxfs', desc: 'C9就业办' }
+                        ];
+                        data.studyLinks = presetLinks.map(p => ({ id: genId(), name: p.name, url: p.url, desc: p.desc }));
+                        saveData();
+                        renderAll();
+                        // 跳转到台账页面
+                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelector('[data-page="page-ledger"]').classList.add('active');
+                        document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+                        document.getElementById('page-ledger').classList.add('active');
+                    }
+                }
             });
         });
 
@@ -2761,11 +2831,12 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         //  核心：判断是否整行变灰
         // ============================================================
         function isRowFailed(row) {
-            if (row.finalStatus === '未入职') return true;
+	    if (row.phoneNote === '已拒绝') return true;
+            if (row.finalStatus === '不入职') return true;
             if (row.resumeStatus === '不通过') return true;
             const maxRounds = getMaxRounds();
             for (let i = 1; i <= maxRounds; i++) {
-                if (row['interview'+i+'Result'] === '未通过') return true;
+                if (row['interview'+i+'Result'] === '不通过') return true;
             }
             return false;
         }
@@ -2830,9 +2901,10 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
             }
 
             let rowsHtml = '';
-            filtered.forEach((row, idx) => {
-                const realIdx = data.ledger.length - data.ledger.indexOf(row);
-                const positionOptions = data.positions.map(p => `<option value="${p.name}" ${row.position === p.name ? 'selected' : ''}>${p.name}</option>`).join('');
+const totalCount = filtered.length;
+filtered.forEach((row, idx) => {
+    const seqNum = totalCount - idx;
+    const positionOptions = data.positions.map(p => `<option value="${p.name}" ${row.position === p.name ? 'selected' : ''}>${p.name}</option>`).join('');
                 const failed = isRowFailed(row);
                 const offered = isRowOffered(row);
                 const isDeleted = row._deleted === true;
@@ -2844,25 +2916,32 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                 else if (failed) rowClass = 'row-failed';
 
                 let remarkWarning = '';
-                if (!isDeleted) {
-                    const timeFields = ['resumeDate'];
-                    for (let i = 1; i <= 5; i++) { timeFields.push('interview'+i+'Time'); }
-                    let latestTime = null;
-                    timeFields.forEach(field => {
-                        const val = row[field];
-                        if (val) {
-                            const dateStr = val.substring(0, 10);
-                            if (dateStr && (!latestTime || dateStr > latestTime)) { latestTime = dateStr; }
-                        }
-                    });
-                    if (latestTime) {
-                        const days = daysSince(latestTime);
-                        if (days >= 5) { remarkWarning = days + '天没动喵！'; }
-                    }
-                }
+// ===== 已入职/不入职/已拒绝 的不显示 X天没动喵！ =====
+if (!isDeleted && row.finalStatus !== '已入职' && row.finalStatus !== '不入职' && row.phoneNote !== '已拒绝') {
+    const timeFields = ['resumeDate'];
+    for (let i = 1; i <= 5; i++) {
+        timeFields.push('interview'+i+'Time');
+    }
+    let latestTime = null;
+    timeFields.forEach(field => {
+        const val = row[field];
+        if (val) {
+            const dateStr = val.substring(0, 10);
+            if (dateStr && (!latestTime || dateStr > latestTime)) {
+                latestTime = dateStr;
+            }
+        }
+    });
+    if (latestTime) {
+        const days = daysSince(latestTime);
+        if (days >= 5) {
+            remarkWarning = days + '天没动喵！';
+        }
+    }
+}
 
                 let rowHtml = `<tr class="${rowClass}">`;
-                rowHtml += `<td class="col-seq">${realIdx}</td>`;
+                rowHtml += `<td class="col-seq">${seqNum}</td>`;
                 rowHtml += `<td class="col-delete-actions delete-action-cell">`;
                 if (isDeleted) {
                     rowHtml += `<button class="delete-action-btn restore-btn" data-action="restore" data-id="${row.id}">↩️ 恢复</button>`;
@@ -2876,7 +2955,7 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                 rowHtml += `<td class="col-resume-date"><input class="editable-input" type="date" value="${row.resumeDate || ''}" data-field="resumeDate" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></td>`;
                 rowHtml += `<td class="col-resume-status"><select class="editable-select" data-field="resumeStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="">待MT审核</option><option value="通过" ${row.resumeStatus === '通过' ? 'selected' : ''}>通过</option><option value="不通过" ${row.resumeStatus === '不通过' ? 'selected' : ''}>不通过</option></select></td>`;
                 const showPhone = shouldShowColumn(row, 'phone', maxRounds);
-                rowHtml += `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option></select></td>`;
+                rowHtml += `<td class="col-phone ${showPhone ? '' : 'hidden-cell'}"><select class="editable-select" data-field="phoneNote" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="否" ${row.phoneNote === '否' ? 'selected' : ''}>否</option><option value="是" ${row.phoneNote === '是' ? 'selected' : ''}>是</option><option value="打不通" ${row.phoneNote === '打不通' ? 'selected' : ''}>打不通</option><option value="已拒绝" ${row.phoneNote === '已拒绝' ? 'selected' : ''}>已拒绝</option></select></td>`;
 
                 for (let i = 1; i <= maxRounds; i++) {
                     const timeField = 'interview'+i+'Time';
@@ -2885,13 +2964,13 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
                     if (i <= posRounds) { show = shouldShowColumn(row, timeField, maxRounds); }
                     const timeVal = row[timeField] || '';
                     const resultVal = row[resultField] || '';
-                    const resultOptions = `<option value="">待业务<br>出结果</option><option value="通过" ${resultVal === '通过' ? 'selected' : ''}>通过</option><option value="未通过" ${resultVal === '未通过' ? 'selected' : ''}>未通过</option>`;
+                    const resultOptions = `<option value="">待业务<br>出结果</option><option value="通过" ${resultVal === '通过' ? 'selected' : ''}>通过</option><option value="不通过" ${resultVal === '不通过' ? 'selected' : ''}>不通过</option>`;
                     rowHtml += `<td class="col-interview-time ${show ? '' : 'hidden-cell'}"><div class="interview-time-cell"><input class="time-input" type="datetime-local" value="${timeVal}" data-field="${timeField}" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}></div></td>`;
                     rowHtml += `<td class="col-interview-result ${show ? '' : 'hidden-cell'}"><select class="editable-select result-select" data-field="${resultField}" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}>${resultOptions}</select></td>`;
                 }
 
                 const showFinal = shouldShowColumn(row, 'final', maxRounds);
-                rowHtml += `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="流程中" ${row.finalStatus === '流程中' || !row.finalStatus ? 'selected' : ''}>流程中</option><option value="已入职" ${row.finalStatus === '已入职' ? 'selected' : ''}>已入职</option><option value="未入职" ${row.finalStatus === '未入职' ? 'selected' : ''}>未入职</option></select></td>`;
+                rowHtml += `<td class="col-final ${showFinal ? '' : 'hidden-cell'}"><select class="editable-select" data-field="finalStatus" data-id="${row.id}" ${isDeleted ? 'disabled style="pointer-events:none;"' : ''}><option value="流程中" ${row.finalStatus === '流程中' || !row.finalStatus ? 'selected' : ''}>流程中</option><option value="已入职" ${row.finalStatus === '已入职' ? 'selected' : ''}>已入职</option><option value="不入职" ${row.finalStatus === '不入职' ? 'selected' : ''}>不入职</option></select></td>`;
 
                 let remarkValue = row.remark || '';
                 if (remarkWarning) { remarkValue = remarkWarning; }
@@ -2997,7 +3076,7 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         }
 
         // ============================================================
-        //  导入导出
+        //  导入导出 - 只导出5轮面试
         // ============================================================
         document.getElementById('exportExcelBtn').addEventListener('click', function() {
             const activeRows = data.ledger.filter(r => !r._deleted);
@@ -3027,10 +3106,41 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         });
 
         document.getElementById('exportJsonBtn').addEventListener('click', function() {
+            // 只导出5轮面试，保持与台账一致
             const exportData = {
                 version: '1.0',
                 exportTime: new Date().toISOString(),
-                data: data
+                data: {
+                    ledger: data.ledger.map(r => {
+                        // 只保留 interview1~5，去掉6~10
+                        const newRow = {};
+                        // 复制所有基础字段
+                        const baseFields = ['id', 'name', 'position', 'resumeDate', 'resumeStatus', 'phoneNote', 'finalStatus', 'remark', 'lastUpdate'];
+                        baseFields.forEach(f => { newRow[f] = r[f]; });
+                        // 只复制前5轮面试
+                        for (let i = 1; i <= 5; i++) {
+                            newRow['interview'+i+'Time'] = r['interview'+i+'Time'] || '';
+                            newRow['interview'+i+'Result'] = r['interview'+i+'Result'] || '';
+                        }
+                        return newRow;
+                    }),
+                    shortTodos: data.shortTodos || [],
+                    longTodos: data.longTodos || [],
+                    trashTodos: data.trashTodos || [],
+                    positions: data.positions || [],
+                    companyName: data.companyName || '',
+                    startDate: data.startDate || '',
+                    kpiText: data.kpiText || '',
+                    selectedPositionId: data.selectedPositionId || null,
+                    docs: data.docs || [],
+                    studyLinks: data.studyLinks || [],
+                    _idCounter: data._idCounter || 1000,
+                    filterPosition: data.filterPosition || '',
+                    filterUrgent: data.filterUrgent || false,
+                    gardenPlants: data.gardenPlants || [],
+                    glassesCount: data.glassesCount || 0,
+                    removedFromGarden: data.removedFromGarden || []
+                }
             };
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
             const link = document.createElement('a');
@@ -3041,45 +3151,139 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
         });
 
         document.getElementById('importJsonInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async function(ev) {
-                try {
-                    const imported = JSON.parse(ev.target.result);
-                    if (!imported.data || typeof imported.data !== 'object') {
-                        alert('无效的备份文件：缺少 data 字段');
-                        return;
-                    }
-                    const confirmed = await showCustomModal('📂', '导入数据', '导入将覆盖当前所有数据，确定继续吗？', true);
-                    if (confirmed) {
-                        // 合并导入的数据，保留一些关键字段
-                        const newData = imported.data;
-                        data.ledger = newData.ledger || [];
-                        data.shortTodos = newData.shortTodos || [];
-                        data.longTodos = newData.longTodos || [];
-                        data.trashTodos = newData.trashTodos || [];
-                        data.positions = newData.positions || [];
-                        data.docs = newData.docs || [];
-                        data.studyLinks = newData.studyLinks || [];
-                        data.companyName = newData.companyName || '公司';
-                        data.startDate = newData.startDate || '';
-                        data.kpiText = newData.kpiText || '';
-                        data.gardenPlants = newData.gardenPlants || [];
-                        data.glassesCount = newData.glassesCount || 0;
-                        data.removedFromGarden = newData.removedFromGarden || [];
-                        data._idCounter = newData._idCounter || 1000;
-                        saveData();
-                        renderAll();
-                        alert('导入成功！');
-                    }
-                } catch (err) {
-                    alert('导入失败：' + err.message);
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(ev) {
+        try {
+            const imported = JSON.parse(ev.target.result);
+            if (!imported.data || typeof imported.data !== 'object') {
+                alert('无效的备份文件：缺少 data 字段');
+                return;
+            }
+            const confirmed = await showCustomModal('📂', '导入数据', '导入将覆盖当前所有数据，确定继续吗？', true);
+            if (confirmed) {
+                const newData = imported.data;
+                data.ledger = newData.ledger || [];
+                data.shortTodos = newData.shortTodos || [];
+                data.longTodos = newData.longTodos || [];
+                data.trashTodos = newData.trashTodos || [];
+                data.positions = newData.positions || [];
+                data.docs = newData.docs || [];
+                data.studyLinks = newData.studyLinks || [];
+                data.companyName = newData.companyName || '公司';
+                data.startDate = newData.startDate || '';
+                data.kpiText = newData.kpiText || '';
+                data.gardenPlants = newData.gardenPlants || [];
+                data.glassesCount = newData.glassesCount || 0;
+                data.removedFromGarden = newData.removedFromGarden || [];
+                
+                // ===== 修复：更新 _idCounter 为所有 id 中的最大值 + 1 =====
+                let maxId = 1000;
+                data.ledger.forEach(r => { if (r.id && r.id > maxId) maxId = r.id; });
+                data.positions.forEach(p => { if (p.id && p.id > maxId) maxId = p.id; });
+                data.docs.forEach(d => { if (d.id && d.id > maxId) maxId = d.id; });
+                data.studyLinks.forEach(l => { if (l.id && l.id > maxId) maxId = l.id; });
+                data.gardenPlants.forEach(p => { if (p.id && p.id > maxId) maxId = p.id; });
+                data._idCounter = maxId + 1;
+                // ===== 修复结束 =====
+                
+                saveData();
+                renderAll();
+                alert('导入成功！');
+            }
+        } catch (err) {
+            alert('导入失败：' + err.message);
+        }
+        e.target.value = '';
+    };
+    reader.readAsText(file);
+});
+
+        // ============================================================
+        //  "如何导入JSON？" 链接功能
+        // ============================================================
+        document.getElementById('importHelpLink').addEventListener('click', function() {
+            // 标准JSON格式（基于用户提供的TXT内容，但只保留必要字段）
+            const standardJSON = {
+                "version": "1.0",
+                "exportTime": new Date().toISOString(),
+                "data": {
+                    "ledger": [
+                        {
+                            "id": 9998,
+                            "name": "李程序",
+                            "position": "数据分析师",
+                            "resumeDate": "2026-08-20",
+                            "resumeStatus": "通过/不通过/待MT审核",
+                            "phoneNote": "是/否/打不通/已拒绝",
+                            "finalStatus": "流程中/已入职/不入职",
+                            "remark": "北航硕士，有3年互联网数据分析经验，擅长Tableau",
+                            "interview1Time": "2026-08-11T19:32",
+                            "interview1Result": "通过/不通过/待业务出结果",
+                            "interview2Time": "2026-08-11T19:32",
+                            "interview2Result": "通过/不通过/待业务出结果",
+                            "interview3Time": "2026-08-11T19:32",
+                            "interview3Result": "通过/不通过/待业务出结果",
+                            "interview4Time": "",
+                            "interview4Result": "",
+                            "interview5Time": "",
+                            "interview5Result": ""
+                        }
+                    ],
+                    "positions": [
+                        { "id": 1016, "name": "产品运营", "jd": "", "tip": "", "rounds": 2 },
+                        { "id": 1017, "name": "高级交付工程师", "jd": "", "tip": "", "rounds": 3 }
+                    ],
+                    "companyName": "阿百跳团网络科技有限公司",
+                    "startDate": "2026-08-12",
+                    "kpiText": "每天"
                 }
-                e.target.value = '';
             };
-            reader.readAsText(file);
+
+            const instruction = "以上是供你参考的标准JSON格式。任务：将我的台账无损转换为标准JSON格式。智能判断：智能判断该候选人的情况，将自然语言改写为标准JSON规定的字符串值，如“已淘汰”改为“不通过”。状态锁定：所有涉及业务节点的字段（如‘审批结果’‘任务阶段’），其字符串值必须与标准JSON格式完全一致，禁止同义词替换、翻译或语序调整。哪怕标准JSON格式存在错别字或空格，也不得修正。结构纯净：输出内容不得包含JSON语法之外的任何字符（如“以下是结果”、“转换完成”等提示语）。_idCounter必须从9999开始倒数。字段映射：只转换我提供的台账列头，缺失的列头不补全，多余的列头不丢弃（保留为空值）。确保JSON语法正确（逗号、引号、括号闭合）";
+
+            // 组合要复制的内容：标准JSON + 指令
+            const copyContent = JSON.stringify(standardJSON, null, 2) + "\n\n" + instruction;
+
+            // 使用navigator.clipboard复制
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(copyContent).then(function() {
+                    // 显示提示信息
+                    const link = document.getElementById('importHelpLink');
+                    const originalText = link.textContent;
+                    link.textContent = '✅ 已复制！';
+                    setTimeout(() => { link.textContent = originalText; }, 2500);
+                    
+                    // 显示指引
+                    alert('📋 已复制标准JSON格式和导入指令喵！\n\n下一步：\n1. 打开AI助手（如ChatGPT、DeepSeek、豆包等）\n2. 将你需要导入的社招台账上传给AI\n3. 同时将剪贴板中的指令和标准JSON格式Ctrl+V粘贴给AI\n4. AI会帮你整理成符合规范的JSON文本，然后以json或.txt后缀使用“导入JSON”按钮导入');
+                }).catch(function() {
+                    fallbackCopyForHelp(copyContent);
+                });
+            } else {
+                fallbackCopyForHelp(copyContent);
+            }
         });
+
+        function fallbackCopyForHelp(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const link = document.getElementById('importHelpLink');
+                const originalText = link.textContent;
+                link.textContent = '✅ 已复制！';
+                setTimeout(() => { link.textContent = originalText; }, 2500);
+                alert('📋 已复制标准JSON格式和导入指令喵！\n\n下一步：\n1. 打开AI助手（如ChatGPT、DeepSeek、豆包等）\n2. 将你需要导入的社招台账上传给AI\n3. 同时将剪贴板中的指令和标准JSON格式Ctrl+V粘贴给AI\n4. AI会帮你整理成符合规范的JSON文件，然后使用“导入JSON”按钮导入');
+            } catch (e) {
+                alert('复制失败，请手动复制以下内容：\n\n' + text);
+            }
+            document.body.removeChild(textarea);
+        }
 
         // ============================================================
         //  添加候选人
@@ -3172,24 +3376,31 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
             showDayDetail(selectedDate);
         }
 
-        function showDayDetail(dateStr) {
-            const container = document.getElementById('dayDetailContent');
-            if (!dateStr) { container.innerHTML = '点击日期查看'; return; }
-            const events = [];
-            data.ledger.forEach(row => {
-                if (row._deleted) return;
-                for (let i = 1; i <= 10; i++) {
-                    const time = row['interview'+i+'Time'];
-                    if (time && time.substring(0,10) === dateStr) {
-                        const level = ['一','二','三','四','五','六','七','八','九','十'][i-1];
-                        const timeDisplay = time.substring(11,16) || '';
-                        events.push(row.name || '未命名' + ' · ' + level + '面 ' + timeDisplay + (row['interview'+i+'Result'] ? ' ('+row['interview'+i+'Result']+')' : ''));
-                    }
-                }
-            });
-            if (events.length === 0) { container.innerHTML = '<div style="color:#b0888a;font-size:0.8rem;">📭 这一天没有安排喵！</div>'; }
-            else { container.innerHTML = events.map(e => '<div class="detail-item">📌 '+e+'</div>').join(''); }
+       function showDayDetail(dateStr) {
+    const container = document.getElementById('dayDetailContent');
+    if (!dateStr) { container.innerHTML = '点击日期查看'; return; }
+    const events = [];
+    data.ledger.forEach(row => {
+        if (row._deleted) return;
+        for (let i = 1; i <= 10; i++) {
+            const time = row['interview'+i+'Time'];
+            if (time && time.substring(0,10) === dateStr) {
+                const level = ['一','二','三','四','五','六','七','八','九','十'][i-1];
+                // ===== 改动开始 =====
+                const dateObj = new Date(time);
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const hour = String(dateObj.getHours()).padStart(2, '0');
+                const minute = String(dateObj.getMinutes()).padStart(2, '0');
+                const timeDisplay = month + '/' + day + ' ' + hour + ':' + minute;
+                // ===== 改动结束 =====
+                events.push(row.name || '未命名' + ' · ' + level + '面 ' + timeDisplay + (row['interview'+i+'Result'] ? ' ('+row['interview'+i+'Result']+')' : ''));
+            }
         }
+    });
+    if (events.length === 0) { container.innerHTML = '<div style="color:#b0888a;font-size:0.8rem;">📭 这一天没有安排喵！</div>'; }
+    else { container.innerHTML = events.map(e => '<div class="detail-item">📌 '+e+'</div>').join(''); }
+}
 
         document.getElementById('calPrev').addEventListener('click', function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
         document.getElementById('calNext').addEventListener('click', function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
@@ -3475,9 +3686,9 @@ boss、猎聘等招聘平台都内置筛选功能。boss每天打招呼上限150
             document.getElementById('statInterviewWeekNames').innerHTML = interviewWeek.map(r => '<span class="name-tag">'+(r.name||'未命名')+'</span>').join('') || '<span class="empty-tag">暂无</span>';
             document.getElementById('statInterviewMonthNames').innerHTML = interviewMonth.map(r => '<span class="name-tag">'+(r.name||'未命名')+'</span>').join('') || '<span class="empty-tag">暂无</span>';
 
-const passTotal = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time);
-const passWeek = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= weekStart);
-const passMonth = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= monthStart);
+            const passTotal = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time);
+            const passWeek = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= weekStart);
+            const passMonth = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneNote === '是' && r.interview1Time && r.interview1Time.substring(0,10) >= monthStart);
             document.getElementById('statPassTotal').textContent = passTotal.length;
             document.getElementById('statPassWeek').textContent = passWeek.length;
             document.getElementById('statPassMonth').textContent = passMonth.length;
@@ -3503,67 +3714,67 @@ const passMonth = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneN
         }
 
         document.getElementById('exportReportBtn').addEventListener('click', function() {
-    const activeRows = data.ledger.filter(r => !r._deleted);
-    const weekStart = getWeekStart();
-    const today = getToday();
+            const activeRows = data.ledger.filter(r => !r._deleted);
+            const weekStart = getWeekStart();
+            const today = getToday();
 
-    // 计算本周一和本周五
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + mondayOffset);
-    const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4);
-    
-    const mondayStr = monday.getFullYear() + '年' + String(monday.getMonth() + 1).padStart(2, '0') + '月' + String(monday.getDate()).padStart(2, '0') + '日';
-    const fridayStr = friday.getFullYear() + '年' + String(friday.getMonth() + 1).padStart(2, '0') + '月' + String(friday.getDate()).padStart(2, '0') + '日';
+            // 计算本周一和本周五
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const monday = new Date(now);
+            monday.setDate(now.getDate() + mondayOffset);
+            const friday = new Date(monday);
+            friday.setDate(monday.getDate() + 4);
+            
+            const mondayStr = monday.getFullYear() + '年' + String(monday.getMonth() + 1).padStart(2, '0') + '月' + String(monday.getDate()).padStart(2, '0') + '日';
+            const fridayStr = friday.getFullYear() + '年' + String(friday.getMonth() + 1).padStart(2, '0') + '月' + String(friday.getDate()).padStart(2, '0') + '日';
 
-    const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
-    const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0, 10) >= weekStart);
-    const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
-    const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
+            const resumeWeek = activeRows.filter(r => r.resumeDate && r.resumeDate >= weekStart);
+            const passWeek = activeRows.filter(r => r.interview1Result === '通过' && r.interview1Time && r.interview1Time.substring(0, 10) >= weekStart);
+            const resumeNames = resumeWeek.map(r => r.name || '未命名').filter(Boolean);
+            const passNames = passWeek.map(r => r.name || '未命名').filter(Boolean);
 
-    // 获取所有岗位名称（去重）
-    const allPositions = [...new Set(activeRows.map(r => r.position).filter(Boolean))];
-    const positionStr = allPositions.length > 0 ? allPositions.join('、') : '暂无';
+            // 获取所有岗位名称（去重）
+            const allPositions = [...new Set(activeRows.map(r => r.position).filter(Boolean))];
+            const positionStr = allPositions.length > 0 ? allPositions.join('、') : '暂无';
 
-    let reportText = '';
-    reportText += '（' + mondayStr + ' — ' + fridayStr + '）\n';
-reportText += '\n';
-reportText += '一、本周主要工作完成情况\n';
-reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。';
+            let reportText = '';
+            reportText += '（' + mondayStr + ' — ' + fridayStr + '）\n';
+            reportText += '\n';
+            reportText += '一、本周主要工作完成情况\n';
+            reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。';
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(reportText).then(function() {
-            var btn = document.getElementById('exportReportBtn');
-            var originalText = btn.textContent;
-            btn.textContent = '已复制 ✓';
-            setTimeout(function() { btn.textContent = originalText; }, 1500);
-        }).catch(function() { fallbackCopy(reportText); });
-    } else {
-        fallbackCopy(reportText);
-    }
-});
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(reportText).then(function() {
+                    var btn = document.getElementById('exportReportBtn');
+                    var originalText = btn.textContent;
+                    btn.textContent = '已复制 ✓';
+                    setTimeout(function() { btn.textContent = originalText; }, 1500);
+                }).catch(function() { fallbackCopy(reportText); });
+            } else {
+                fallbackCopy(reportText);
+            }
+        });
 
-function fallbackCopy(text) {
-    var textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-        document.execCommand('copy');
-        var btn = document.getElementById('exportReportBtn');
-        var originalText = btn.textContent;
-        btn.textContent = '已复制 ✓';
-        setTimeout(function() { btn.textContent = originalText; }, 1500);
-    } catch (e) {
-        alert('复制失败，请手动复制：\n\n' + text);
-    }
-    document.body.removeChild(textarea);
-}
+        function fallbackCopy(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                var btn = document.getElementById('exportReportBtn');
+                var originalText = btn.textContent;
+                btn.textContent = '已复制 ✓';
+                setTimeout(function() { btn.textContent = originalText; }, 1500);
+            } catch (e) {
+                alert('复制失败，请手动复制：\n\n' + text);
+            }
+            document.body.removeChild(textarea);
+        }
 
         // ============================================================
         //  文档
