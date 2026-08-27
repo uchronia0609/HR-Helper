@@ -3531,7 +3531,7 @@ const passMonth = activeRows.filter(r => r.resumeStatus === '通过' && r.phoneN
     reportText += '（' + mondayStr + ' — ' + fridayStr + '）\n';
 reportText += '\n';
 reportText += '一、本周主要工作完成情况\n';
-reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过' + passWeek.length + '人：' + (passNames.join('、') || '暂无') + '。';
+reportText += '1.  本周持续跟进' + positionStr + '等' + allPositions.length + '个岗位。收到 ' + resumeWeek.length + ' 份简历：' + (resumeNames.join('、') || '暂无') + '。邀约一面 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。一面通过 ' + passWeek.length + ' 人：' + (passNames.join('、') || '暂无') + '。';
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(reportText).then(function() {
