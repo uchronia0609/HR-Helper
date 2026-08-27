@@ -746,8 +746,21 @@
         }
         .calendar-panel .cal-grid .cal-day.weekend-day { color: #5a3a3e; font-weight: 400; }
         .calendar-panel .cal-grid .cal-day.other-month { color: #d5c8c0; }
-        .calendar-panel .cal-grid .cal-day.today { background: #d47a8a; color: white; font-weight: 700; }
-        .calendar-panel .cal-grid .cal-day.has-event { border-bottom: 3px solid #d47a8a; }
+        /* 今天（默认/离开状态）：粉底白字 */
+.calendar-panel .cal-grid .cal-day.today {
+    background: #d47a8a;
+    color: white;
+    font-weight: 700;
+}
+
+/* 今天被选中（点击后）：白底粉字粉框 */
+.calendar-panel .cal-grid .cal-day.today.selected {
+    background: white;
+    color: #d47a8a;
+    border: 2px solid #d47a8a;
+    font-weight: 700;
+}
+        
         .calendar-panel .cal-grid .cal-day .dot {
             width: 4px;
             height: 4px;
@@ -1929,7 +1942,7 @@
                         <div class="calendar-panel">
                             <div class="cal-header"><span class="cal-month" id="calMonth">2025年1月</span><div class="cal-nav"><button id="calPrev">‹</button><button id="calToday">今</button><button id="calNext">›</button></div></div>
                             <div class="cal-grid" id="calGrid"></div>
-                            <div class="cal-legend"><span><span class="dot-legend"></span> 有面试</span><span>⬤ <span style="color:#d47a8a;font-weight:700;">今天</span></span></div>
+                            <div class="cal-legend"><span><span class="dot-legend"></span> 有面试</span></div>
                             <div class="day-detail" id="dayDetail"><div class="detail-title">该日安排</div><div id="dayDetailContent" style="font-size:0.8rem;color:#b0888a;">点击日期查看</div></div>
                         </div>
                         <div class="todo-panel">
@@ -2478,7 +2491,7 @@ function isUrgent(row) {
         }
 
         function getPlantEmoji(status) {
-            const map = { 'seed':'🌰', 'sprout':'🌱', 'seedling':'🌿', 'bush':'🪴', 'tree':'🌳', 'tree-flower':'🌸', 'harvest':'🎄', 'wilted':'🥀', 'deleted':'🍂' };
+            const map = { 'seed':'🌰', 'sprout':'🌱', 'seedling':'🌿', 'bush':'🪴', 'tree':'🌳', 'tree-flower':'🌸', 'harvest':'🍊', 'wilted':'🥀', 'deleted':'🍂' };
             return map[status] || '🌰';
         }
         function getPlantClass(status) {
@@ -2486,7 +2499,7 @@ function isUrgent(row) {
             return map[status] || 'plant-seed';
         }
         function getStatusText(status) {
-            const map = { 'seed':'🌰 种子', 'sprout':'🌱 破土嫩芽', 'seedling':'🌿 小苗', 'bush':'🪴 灌木', 'tree':'🌳 大树', 'tree-flower':'🌸 开花大树', 'harvest':'🎄 收获！✨', 'wilted':'🥀 蔫了……', 'deleted':'🍂 已删除' };
+            const map = { 'seed':'🌰 种子', 'sprout':'🌱 破土嫩芽', 'seedling':'🌿 小苗', 'bush':'🪴 灌木', 'tree':'🌳 大树', 'tree-flower':'🌸 开花大树', 'harvest':'🍊 收获！✨', 'wilted':'🥀 蔫了……', 'deleted':'🍂 已删除' };
             return map[status] || '🌰 种子';
         }
         function getGardenStatusFromRow(row) {
