@@ -2535,7 +2535,7 @@
 
             <!-- ===== 种植园页面 ===== -->
             <div class="page-container" id="page-garden">
-                <div class="garden-title">🌱 候选人种植园（双击浇水）</div>
+                <div class="garden-title">🌱 候选人种植园（点击浇水）</div>
                 <div class="garden-glasses" id="gardenGlasses">🍊 × <span id="glassesCount">0</span></div>
                 <div class="garden-watermark">🌿 每一棵候选人都在努力长大喵……</div>
                 <div class="garden-plot" id="gardenPlot"></div>
@@ -3547,36 +3547,40 @@
             }
 
             document.querySelectorAll('.plant-container').forEach(el => {
-                const id = parseInt(el.dataset.id);
-                const plant = data.gardenPlants.find(p => p.id === id);
-                if (!plant || plant.status === 'deleted') return;
-                el.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    if (plant.status === 'wilted') {
-                        data.removedFromGarden.push(plant.rowId);
-                        data.gardenPlants = data.gardenPlants.filter(p => p.id !== id);
-                        saveData();
-                        renderGarden();
-                        return;
-                    }
-                    if (plant.status === 'harvest') {
-                        data.glassesCount = (data.glassesCount || 0) + 1;
-                        data.removedFromGarden.push(plant.rowId);
-                        data.gardenPlants = data.gardenPlants.filter(p => p.id !== id);
-                        saveData();
-                        document.getElementById('glassesCount').textContent = data.glassesCount;
-                        const rect = el.getBoundingClientRect();
-                        showHarvestFloat(rect.left + rect.width / 2 - 40, rect.top - 20);
-                        renderGarden();
-                        return;
-                    }
-                });
-                el.addEventListener('dblclick', function(e) {
-                    e.stopPropagation();
-                    const rect = el.getBoundingClientRect();
-                    triggerWaterEffect(rect.left + rect.width / 2, rect.top + rect.height / 2);
-                });
-            });
+    const id = parseInt(el.dataset.id);
+    const plant = data.gardenPlants.find(p => p.id === id);
+    if (!plant || plant.status === 'deleted') return;
+    el.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        // 枯萎：直接移除，不浇水
+        if (plant.status === 'wilted') {
+            data.removedFromGarden.push(plant.rowId);
+            data.gardenPlants = data.gardenPlants.filter(p => p.id !== id);
+            saveData();
+            renderGarden();
+            return;
+        }
+
+        // 收获：直接收获，不浇水
+        if (plant.status === 'harvest') {
+            data.glassesCount = (data.glassesCount || 0) + 1;
+            data.removedFromGarden.push(plant.rowId);
+            data.gardenPlants = data.gardenPlants.filter(p => p.id !== id);
+            saveData();
+            document.getElementById('glassesCount').textContent = data.glassesCount;
+            const rect = el.getBoundingClientRect();
+            showHarvestFloat(rect.left + rect.width / 2 - 40, rect.top - 20);
+            renderGarden();
+            return;
+        }
+
+        // 其他所有状态：浇水
+        const rect = el.getBoundingClientRect();
+        triggerWaterEffect(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    });
+    // 删除 dblclick 这一段（直接删掉）
+});
             plot.addEventListener('click', function(e) { if (e.target === this) hidePlantCard(); });
             saveData();
         }
